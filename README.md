@@ -1,5 +1,5 @@
-# DAAIS
-Depth Aware Amodal Instance Segmentation Network
+# DAIS
+Depth-Aware Amodal Instance Segmentation Network or DAISnet
 
 ---
 
