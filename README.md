@@ -1,5 +1,5 @@
 # DAIS
-Depth-Aware Amodal Instance Segmentation Network or DAISnet, utilizes depth information to predict amodal instance segmentation using occlusion information and 3D feature mapping. Depth is an inherent part to occlusion, it provides many useful information for amodal instance segmentation. Occluded objects are always deeper in depth than the occluder, and thus we can deduct which regions are possibly occluded and vice versa. DAISnet utilizes depth information extensively. Depth information can also be used to reconstruct occluded regions. 2D shapes with depth, arguably 2.5D or even 3D, offers feature rich information that could give insight to the position, orientation and region of the object in question. We used a codebook mechanism that uses said features to refine our amodal segmentation. 
+Depth-Aware Amodal Instance Segmentation Network or DAISnet, utilizes depth information to predict amodal instance segmentation using occlusion relations and 3D shape prior. Depth is an inherent part to occlusion, it provides many useful information for amodal instance segmentation. Occluded objects are always deeper in depth than the occluder, and thus we can deduct which regions are possibly occluded and vice versa. DAISnet utilizes depth information extensively. Depth information can also be used to reconstruct occluded regions. 2D shapes with depth, arguably 2.5D or even 3D, offers feature rich information that could give insight to the position, orientation and region of the object in question. We used a codebook mechanism that uses said features to refine our amodal segmentation. 
 
 ## Installation
 
@@ -27,7 +27,6 @@ pip install git+https://github.com/philferriere/cocoapi.git#subdirectory=PythonA
 ```
 
 ## Data
-
 
 ## Training
 
