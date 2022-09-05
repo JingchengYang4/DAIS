@@ -1,0 +1,236 @@
+ Average Precision  (AP) @[ IoU=0.50:0.95 | area=   all | maxDets=100 ] = 0.315
+ Average Precision  (AP) @[ IoU=0.50      | area=   all | maxDets=100 ] = 0.548
+ Average Precision  (AP) @[ IoU=0.75      | area=   all | maxDets=100 ] = 0.327
+ Average Precision  (AP) @[ IoU=0.50:0.95 | area= small | maxDets=100 ] = 0.368
+ Average Precision  (AP) @[ IoU=0.50:0.95 | area=medium | maxDets=100 ] = 0.351
+ Average Precision  (AP) @[ IoU=0.50:0.95 | area= large | maxDets=100 ] = 0.292
+ Average Recall     (AR) @[ IoU=0.50:0.95 | area=   all | maxDets=  1 ] = 0.204
+ Average Recall     (AR) @[ IoU=0.50:0.95 | area=   all | maxDets= 10 ] = 0.419
+ Average Recall     (AR) @[ IoU=0.50:0.95 | area=   all | maxDets=100 ] = 0.444
+ Average Recall     (AR) @[ IoU=0.50:0.95 | area= small | maxDets=100 ] = 0.439
+ Average Recall     (AR) @[ IoU=0.50:0.95 | area=medium | maxDets=100 ] = 0.414
+ Average Recall     (AR) @[ IoU=0.50:0.95 | area= large | maxDets=100 ] = 0.342
+[09/05 21:11:54 d2.evaluation.amodal_visible_evaluation]: Evaluation results for segm:
+|   AP   |  AP50  |  AP75  |  APs   |  APm   |  APl   |  AR1   |  AR10  |  AR100  |
+|:------:|:------:|:------:|:------:|:------:|:------:|:------:|:------:|:-------:|
+| 31.545 | 54.839 | 32.721 | 36.756 | 35.083 | 29.232 | 20.373 | 41.892 | 44.380  |
+[09/05 21:11:54 d2.evaluation.amodal_visible_evaluation]: Per-category segm AP:
+| category   | AP     | category   | AP     | category   | AP     |
+|:-----------|:-------|:-----------|:-------|:-----------|:-------|
+| cyclist    | 39.735 | pedestrian | 32.419 | car        | 51.985 |
+| tram       | 15.141 | truck      | 10.560 | van        | 29.385 |
+| misc       | 41.591 |            |        |            |        |
+[09/05 21:11:54 d2.evaluation.amodal_visible_evaluation]: Evaluation task_name : amodal_ensemble_segm
+Loading and preparing results...
+DONE (t=0.84s)
+creating index...
+index created!
+Running per image evaluation...
+Evaluate annotation type *segm*
+DONE (t=39.71s).
+Accumulating evaluation results...
+DONE (t=2.71s).
+ Average Precision  (AP) @[ IoU=0.50:0.95 | area=   all | maxDets=100 ] = 0.317
+ Average Precision  (AP) @[ IoU=0.50      | area=   all | maxDets=100 ] = 0.550
+ Average Precision  (AP) @[ IoU=0.75      | area=   all | maxDets=100 ] = 0.330
+ Average Precision  (AP) @[ IoU=0.50:0.95 | area= small | maxDets=100 ] = 0.442
+ Average Precision  (AP) @[ IoU=0.50:0.95 | area=medium | maxDets=100 ] = 0.416
+ Average Precision  (AP) @[ IoU=0.50:0.95 | area= large | maxDets=100 ] = 0.346
+ Average Recall     (AR) @[ IoU=0.50:0.95 | area=   all | maxDets=  1 ] = 0.204
+ Average Recall     (AR) @[ IoU=0.50:0.95 | area=   all | maxDets= 10 ] = 0.420
+ Average Recall     (AR) @[ IoU=0.50:0.95 | area=   all | maxDets=100 ] = 0.445
+ Average Recall     (AR) @[ IoU=0.50:0.95 | area= small | maxDets=100 ] = 0.441
+ Average Recall     (AR) @[ IoU=0.50:0.95 | area=medium | maxDets=100 ] = 0.415
+ Average Recall     (AR) @[ IoU=0.50:0.95 | area= large | maxDets=100 ] = 0.344
+[09/05 21:12:42 d2.evaluation.amodal_visible_evaluation]: Evaluation results for segm:
+|   AP   |  AP50  |  AP75  |  APs   |  APm   |  APl   |  AR1   |  AR10  |  AR100  |
+|:------:|:------:|:------:|:------:|:------:|:------:|:------:|:------:|:-------:|
+| 31.701 | 55.000 | 33.048 | 44.187 | 41.641 | 34.554 | 20.407 | 42.021 | 44.546  |
+[09/05 21:12:42 d2.evaluation.amodal_visible_evaluation]: Per-category segm AP:
+| category   | AP     | category   | AP     | category   | AP     |
+|:-----------|:-------|:-----------|:-------|:-----------|:-------|
+| cyclist    | 39.795 | pedestrian | 32.672 | car        | 52.130 |
+| tram       | 15.216 | truck      | 10.697 | van        | 29.402 |
+| misc       | 41.998 |            |        |            |        |
+[09/05 21:12:42 d2.evaluation.amodal_visible_evaluation]: Evaluation task_name : amodal_segm
+Loading and preparing results...
+DONE (t=0.90s)
+creating index...
+index created!
+Running per image evaluation...
+Evaluate annotation type *segm*
+DONE (t=39.32s).
+Accumulating evaluation results...
+DONE (t=2.79s).
+ Average Precision  (AP) @[ IoU=0.50:0.95 | area=   all | maxDets=100 ] = 0.310
+ Average Precision  (AP) @[ IoU=0.50      | area=   all | maxDets=100 ] = 0.547
+ Average Precision  (AP) @[ IoU=0.75      | area=   all | maxDets=100 ] = 0.316
+ Average Precision  (AP) @[ IoU=0.50:0.95 | area= small | maxDets=100 ] = 0.366
+ Average Precision  (AP) @[ IoU=0.50:0.95 | area=medium | maxDets=100 ] = 0.353
+ Average Precision  (AP) @[ IoU=0.50:0.95 | area= large | maxDets=100 ] = 0.296
+ Average Recall     (AR) @[ IoU=0.50:0.95 | area=   all | maxDets=  1 ] = 0.200
+ Average Recall     (AR) @[ IoU=0.50:0.95 | area=   all | maxDets= 10 ] = 0.411
+ Average Recall     (AR) @[ IoU=0.50:0.95 | area=   all | maxDets=100 ] = 0.435
+ Average Recall     (AR) @[ IoU=0.50:0.95 | area= small | maxDets=100 ] = 0.430
+ Average Recall     (AR) @[ IoU=0.50:0.95 | area=medium | maxDets=100 ] = 0.404
+ Average Recall     (AR) @[ IoU=0.50:0.95 | area= large | maxDets=100 ] = 0.332
+[09/05 21:13:29 d2.evaluation.amodal_visible_evaluation]: Evaluation results for segm:
+|   AP   |  AP50  |  AP75  |  APs   |  APm   |  APl   |  AR1   |  AR10  |  AR100  |
+|:------:|:------:|:------:|:------:|:------:|:------:|:------:|:------:|:-------:|
+| 30.957 | 54.724 | 31.579 | 36.578 | 35.266 | 29.570 | 20.033 | 41.067 | 43.480  |
+[09/05 21:13:29 d2.evaluation.amodal_visible_evaluation]: Per-category segm AP:
+| category   | AP     | category   | AP     | category   | AP     |
+|:-----------|:-------|:-----------|:-------|:-----------|:-------|
+| cyclist    | 38.881 | pedestrian | 31.643 | car        | 51.544 |
+| tram       | 14.821 | truck      | 10.484 | van        | 28.750 |
+| misc       | 40.576 |            |        |            |        |
+[09/05 21:13:29 d2.evaluation.amodal_visible_evaluation]: Evaluation task_name : bbox
+Loading and preparing results...
+DONE (t=0.09s)
+creating index...
+index created!
+Running per image evaluation...
+Evaluate annotation type *bbox*
+DONE (t=39.03s).
+Accumulating evaluation results...
+DONE (t=2.85s).
+ Average Precision  (AP) @[ IoU=0.50:0.95 | area=   all | maxDets=100 ] = 0.327
+ Average Precision  (AP) @[ IoU=0.50      | area=   all | maxDets=100 ] = 0.551
+ Average Precision  (AP) @[ IoU=0.75      | area=   all | maxDets=100 ] = 0.338
+ Average Precision  (AP) @[ IoU=0.50:0.95 | area= small | maxDets=100 ] = 0.389
+ Average Precision  (AP) @[ IoU=0.50:0.95 | area=medium | maxDets=100 ] = 0.378
+ Average Precision  (AP) @[ IoU=0.50:0.95 | area= large | maxDets=100 ] = 0.329
+ Average Recall     (AR) @[ IoU=0.50:0.95 | area=   all | maxDets=  1 ] = 0.201
+ Average Recall     (AR) @[ IoU=0.50:0.95 | area=   all | maxDets= 10 ] = 0.430
+ Average Recall     (AR) @[ IoU=0.50:0.95 | area=   all | maxDets=100 ] = 0.458
+ Average Recall     (AR) @[ IoU=0.50:0.95 | area= small | maxDets=100 ] = 0.455
+ Average Recall     (AR) @[ IoU=0.50:0.95 | area=medium | maxDets=100 ] = 0.431
+ Average Recall     (AR) @[ IoU=0.50:0.95 | area= large | maxDets=100 ] = 0.369
+[09/05 21:14:12 d2.evaluation.amodal_visible_evaluation]: Evaluation results for bbox:
+|   AP   |  AP50  |  AP75  |  APs   |  APm   |  APl   |
+|:------:|:------:|:------:|:------:|:------:|:------:|
+| 32.709 | 55.060 | 33.759 | 38.898 | 37.791 | 32.898 |
+[09/05 21:14:12 d2.evaluation.amodal_visible_evaluation]: Per-category bbox AP:
+| category   | AP     | category   | AP     | category   | AP     |
+|:-----------|:-------|:-----------|:-------|:-----------|:-------|
+| cyclist    | 40.559 | pedestrian | 35.501 | car        | 51.427 |
+| tram       | 12.091 | truck      | 9.337  | van        | 27.742 |
+| misc       | 52.306 |            |        |            |        |
+[09/05 21:14:12 d2.evaluation.amodal_visible_evaluation]: Evaluation task_name : visible2_segm
+Loading and preparing results...
+DONE (t=0.85s)
+creating index...
+index created!
+Running per image evaluation...
+Evaluate annotation type *segm*
+DONE (t=39.44s).
+Accumulating evaluation results...
+DONE (t=2.79s).
+ Average Precision  (AP) @[ IoU=0.50:0.95 | area=   all | maxDets=100 ] = 0.291
+ Average Precision  (AP) @[ IoU=0.50      | area=   all | maxDets=100 ] = 0.514
+ Average Precision  (AP) @[ IoU=0.75      | area=   all | maxDets=100 ] = 0.299
+ Average Precision  (AP) @[ IoU=0.50:0.95 | area= small | maxDets=100 ] = 0.338
+ Average Precision  (AP) @[ IoU=0.50:0.95 | area=medium | maxDets=100 ] = 0.313
+ Average Precision  (AP) @[ IoU=0.50:0.95 | area= large | maxDets=100 ] = 0.242
+ Average Recall     (AR) @[ IoU=0.50:0.95 | area=   all | maxDets=  1 ] = 0.196
+ Average Recall     (AR) @[ IoU=0.50:0.95 | area=   all | maxDets= 10 ] = 0.395
+ Average Recall     (AR) @[ IoU=0.50:0.95 | area=   all | maxDets=100 ] = 0.413
+ Average Recall     (AR) @[ IoU=0.50:0.95 | area= small | maxDets=100 ] = 0.406
+ Average Recall     (AR) @[ IoU=0.50:0.95 | area=medium | maxDets=100 ] = 0.370
+ Average Recall     (AR) @[ IoU=0.50:0.95 | area= large | maxDets=100 ] = 0.284
+[09/05 21:15:00 d2.evaluation.amodal_visible_evaluation]: Evaluation results for segm:
+|   AP   |  AP50  |  AP75  |  APs   |  APm   |  APl   |  AR1   |  AR10  |  AR100  |
+|:------:|:------:|:------:|:------:|:------:|:------:|:------:|:------:|:-------:|
+| 29.140 | 51.422 | 29.921 | 33.811 | 31.336 | 24.199 | 19.620 | 39.511 | 41.307  |
+[09/05 21:15:00 d2.evaluation.amodal_visible_evaluation]: Per-category segm AP:
+| category   | AP     | category   | AP     | category   | AP     |
+|:-----------|:-------|:-----------|:-------|:-----------|:-------|
+| cyclist    | 38.499 | pedestrian | 30.212 | car        | 46.458 |
+| tram       | 13.603 | truck      | 10.377 | van        | 26.049 |
+| misc       | 38.780 |            |        |            |        |
+[09/05 21:15:00 d2.evaluation.amodal_visible_evaluation]: Evaluation task_name : visible_ensemble_segm
+Loading and preparing results...
+DONE (t=0.89s)
+creating index...
+index created!
+Running per image evaluation...
+Evaluate annotation type *segm*
+DONE (t=39.78s).
+Accumulating evaluation results...
+DONE (t=2.68s).
+ Average Precision  (AP) @[ IoU=0.50:0.95 | area=   all | maxDets=100 ] = 0.290
+ Average Precision  (AP) @[ IoU=0.50      | area=   all | maxDets=100 ] = 0.514
+ Average Precision  (AP) @[ IoU=0.75      | area=   all | maxDets=100 ] = 0.294
+ Average Precision  (AP) @[ IoU=0.50:0.95 | area= small | maxDets=100 ] = 0.405
+ Average Precision  (AP) @[ IoU=0.50:0.95 | area=medium | maxDets=100 ] = 0.367
+ Average Precision  (AP) @[ IoU=0.50:0.95 | area= large | maxDets=100 ] = 0.277
+ Average Recall     (AR) @[ IoU=0.50:0.95 | area=   all | maxDets=  1 ] = 0.196
+ Average Recall     (AR) @[ IoU=0.50:0.95 | area=   all | maxDets= 10 ] = 0.395
+ Average Recall     (AR) @[ IoU=0.50:0.95 | area=   all | maxDets=100 ] = 0.412
+ Average Recall     (AR) @[ IoU=0.50:0.95 | area= small | maxDets=100 ] = 0.404
+ Average Recall     (AR) @[ IoU=0.50:0.95 | area=medium | maxDets=100 ] = 0.366
+ Average Recall     (AR) @[ IoU=0.50:0.95 | area= large | maxDets=100 ] = 0.275
+[09/05 21:15:48 d2.evaluation.amodal_visible_evaluation]: Evaluation results for segm:
+|   AP   |  AP50  |  AP75  |  APs   |  APm   |  APl   |  AR1   |  AR10  |  AR100  |
+|:------:|:------:|:------:|:------:|:------:|:------:|:------:|:------:|:-------:|
+| 28.988 | 51.404 | 29.365 | 40.481 | 36.662 | 27.652 | 19.649 | 39.456 | 41.192  |
+[09/05 21:15:48 d2.evaluation.amodal_visible_evaluation]: Per-category segm AP:
+| category   | AP     | category   | AP     | category   | AP     |
+|:-----------|:-------|:-----------|:-------|:-----------|:-------|
+| cyclist    | 38.786 | pedestrian | 30.804 | car        | 45.407 |
+| tram       | 13.652 | truck      | 10.504 | van        | 25.374 |
+| misc       | 38.388 |            |        |            |        |
+[09/05 21:15:48 d2.evaluation.amodal_visible_evaluation]: Evaluation task_name : visible_segm
+Loading and preparing results...
+DONE (t=0.89s)
+creating index...
+index created!
+Running per image evaluation...
+Evaluate annotation type *segm*
+DONE (t=41.97s).
+Accumulating evaluation results...
+DONE (t=2.84s).
+ Average Precision  (AP) @[ IoU=0.50:0.95 | area=   all | maxDets=100 ] = 0.285
+ Average Precision  (AP) @[ IoU=0.50      | area=   all | maxDets=100 ] = 0.511
+ Average Precision  (AP) @[ IoU=0.75      | area=   all | maxDets=100 ] = 0.288
+ Average Precision  (AP) @[ IoU=0.50:0.95 | area= small | maxDets=100 ] = 0.336
+ Average Precision  (AP) @[ IoU=0.50:0.95 | area=medium | maxDets=100 ] = 0.312
+ Average Precision  (AP) @[ IoU=0.50:0.95 | area= large | maxDets=100 ] = 0.238
+ Average Recall     (AR) @[ IoU=0.50:0.95 | area=   all | maxDets=  1 ] = 0.195
+ Average Recall     (AR) @[ IoU=0.50:0.95 | area=   all | maxDets= 10 ] = 0.389
+ Average Recall     (AR) @[ IoU=0.50:0.95 | area=   all | maxDets=100 ] = 0.406
+ Average Recall     (AR) @[ IoU=0.50:0.95 | area= small | maxDets=100 ] = 0.398
+ Average Recall     (AR) @[ IoU=0.50:0.95 | area=medium | maxDets=100 ] = 0.359
+ Average Recall     (AR) @[ IoU=0.50:0.95 | area= large | maxDets=100 ] = 0.269
+[09/05 21:16:36 d2.evaluation.amodal_visible_evaluation]: Evaluation results for segm:
+|   AP   |  AP50  |  AP75  |  APs   |  APm   |  APl   |  AR1   |  AR10  |  AR100  |
+|:------:|:------:|:------:|:------:|:------:|:------:|:------:|:------:|:-------:|
+| 28.470 | 51.089 | 28.794 | 33.569 | 31.168 | 23.760 | 19.484 | 38.915 | 40.572  |
+[09/05 21:16:36 d2.evaluation.amodal_visible_evaluation]: Per-category segm AP:
+| category   | AP     | category   | AP     | category   | AP     |
+|:-----------|:-------|:-----------|:-------|:-----------|:-------|
+| cyclist    | 38.166 | pedestrian | 30.026 | car        | 44.853 |
+| tram       | 13.461 | truck      | 10.401 | van        | 25.277 |
+| misc       | 37.104 |            |        |            |        |
+[09/05 21:16:37 d2.engine.defaults]: Evaluation results for kins_val in csv format:
+[09/05 21:16:37 d2.evaluation.testing]: copypaste: Task: amodal2_segm
+[09/05 21:16:37 d2.evaluation.testing]: copypaste: AP,AP50,AP75,APs,APm,APl,AR1,AR10,AR100
+[09/05 21:16:37 d2.evaluation.testing]: copypaste: 31.5452,54.8391,32.7213,36.7556,35.0829,29.2324,20.3735,41.8915,44.3796
+[09/05 21:16:37 d2.evaluation.testing]: copypaste: Task: amodal_ensemble_segm
+[09/05 21:16:37 d2.evaluation.testing]: copypaste: AP,AP50,AP75,APs,APm,APl,AR1,AR10,AR100
+[09/05 21:16:37 d2.evaluation.testing]: copypaste: 31.7013,55.0001,33.0478,44.1867,41.6407,34.5545,20.4069,42.0206,44.5461
+[09/05 21:16:37 d2.evaluation.testing]: copypaste: Task: amodal_segm
+[09/05 21:16:37 d2.evaluation.testing]: copypaste: AP,AP50,AP75,APs,APm,APl,AR1,AR10,AR100
+[09/05 21:16:37 d2.evaluation.testing]: copypaste: 30.9572,54.7243,31.5787,36.5781,35.2659,29.5700,20.0332,41.0669,43.4796
+[09/05 21:16:37 d2.evaluation.testing]: copypaste: Task: bbox
+[09/05 21:16:37 d2.evaluation.testing]: copypaste: AP,AP50,AP75,APs,APm,APl
+[09/05 21:16:37 d2.evaluation.testing]: copypaste: 32.7090,55.0600,33.7594,38.8983,37.7909,32.8984
+[09/05 21:16:37 d2.evaluation.testing]: copypaste: Task: visible2_segm
+[09/05 21:16:37 d2.evaluation.testing]: copypaste: AP,AP50,AP75,APs,APm,APl,AR1,AR10,AR100
+[09/05 21:16:37 d2.evaluation.testing]: copypaste: 29.1399,51.4216,29.9210,33.8106,31.3361,24.1995,19.6203,39.5110,41.3070
+[09/05 21:16:37 d2.evaluation.testing]: copypaste: Task: visible_ensemble_segm
+[09/05 21:16:37 d2.evaluation.testing]: copypaste: AP,AP50,AP75,APs,APm,APl,AR1,AR10,AR100
+[09/05 21:16:37 d2.evaluation.testing]: copypaste: 28.9879,51.4037,29.3654,40.4809,36.6620,27.6521,19.6487,39.4563,41.1921
+[09/05 21:16:37 d2.evaluation.testing]: copypaste: Task: visible_segm
+[09/05 21:16:37 d2.evaluation.testing]: copypaste: AP,AP50,AP75,APs,APm,APl,AR1,AR10,AR100
+[09/05 21:16:37 d2.evaluation.testing]: copypaste: 28.4697,51.0889,28.7941,33.5687,31.1684,23.7601,19.4838,38.9149,40.5721

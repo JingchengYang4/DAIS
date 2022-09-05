@@ -299,6 +299,9 @@ class BasicStem(nn.Module):
                 (one of {"FrozenBN", "BN", "GN"}).
         """
         super().__init__()
+
+        print("CHANNELS", in_channels)
+
         self.conv1 = Conv2d(
             in_channels,
             out_channels,
@@ -411,9 +414,11 @@ def build_resnet_backbone(cfg, input_shape):
         ResNet: a :class:`ResNet` instance.
     """
     # need registration of new blocks/stems?
+
+    #SO THIS IS WHERE ALL THE CHANNELS ARE DONE OVER OK
     norm = cfg.MODEL.RESNETS.NORM
     stem = BasicStem(
-        in_channels=input_shape.channels,
+        in_channels=input_shape.channels+1,
         out_channels=cfg.MODEL.RESNETS.STEM_OUT_CHANNELS,
         norm=norm,
     )

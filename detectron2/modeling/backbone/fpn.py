@@ -54,7 +54,7 @@ class FPN(Backbone):
         assert isinstance(bottom_up, Backbone)
 
 
-        print("THERE ARE MANY OF ME")
+        #print("THERE ARE MANY OF ME")
         self.dp = DepthPredictionModule()
 
         # Feature map strides and channels from the bottom up network (e.g. ResNet)
@@ -127,13 +127,21 @@ class FPN(Backbone):
                 ["p2", "p3", ..., "p6"].
         """
 
-        if False:
+        if True:
             #print(x.size())
             image = torch.flip(x, [1])#switches bgr to rgb
-            print(image.size())
+            #print(image.size())
             image -= torch.min(image)#recenter RGB to 0-255
             image /= 255
             depth = self.dp.Predict(image)
+
+            depth_tensor = torch.tensor([[np.log10(depth)]]).cuda()
+            #print(x.size())
+            #print(depth_tensor.size())
+            x = torch.cat((x, depth_tensor), 1)
+            #print(x.size())
+
+            #print(depth_tensor.size())
             if False:
                 f, axarrr = plt.subplots(2, 1)
                 axarrr[0].imshow(image.cpu()[0].permute(1, 2, 0))
