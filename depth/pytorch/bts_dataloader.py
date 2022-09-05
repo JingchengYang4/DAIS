@@ -22,6 +22,7 @@ from torchvision import transforms
 from PIL import Image
 import os
 import random
+import matplotlib.pyplot as plt
 
 from distributed_sampler_no_evenly_divisible import *
 
@@ -123,7 +124,7 @@ class DataLoadPreprocess(Dataset):
                 random_angle = (random.random() - 0.5) * 2 * self.args.degree
                 image = self.rotate_image(image, random_angle)
                 depth_gt = self.rotate_image(depth_gt, random_angle, flag=Image.NEAREST)
-            
+
             image = np.asarray(image, dtype=np.float32) / 255.0
             depth_gt = np.asarray(depth_gt, dtype=np.float32)
             depth_gt = np.expand_dims(depth_gt, axis=2)
@@ -147,7 +148,6 @@ class DataLoadPreprocess(Dataset):
             data_path = '/media/jingcheng/Disk G/KittiDataset/'
             image_path = os.path.join(data_path, sample_path.split()[0])
             image = np.asarray(Image.open(image_path), dtype=np.float32) / 255.0
-
             if self.mode == 'online_eval':
                 gt_path = self.args.gt_path_eval
                 depth_path = os.path.join(gt_path, "./" + sample_path.split()[1])
@@ -180,10 +180,10 @@ class DataLoadPreprocess(Dataset):
                 sample = {'image': image, 'depth': depth_gt, 'focal': focal, 'has_valid_depth': has_valid_depth}
             else:
                 sample = {'image': image, 'focal': focal}
-        
+
         if self.transform:
             sample = self.transform(sample)
-        
+
         return sample
     
     def rotate_image(self, image, angle, flag=Image.BILINEAR):
@@ -269,7 +269,9 @@ class ToTensor(object):
         if isinstance(pic, np.ndarray):
             img = torch.from_numpy(pic.transpose((2, 0, 1)))
             return img
-        
+
+        print("TO TENSORING")
+
         # handle PIL Image
         if pic.mode == 'I':
             img = torch.from_numpy(np.array(pic, np.int32, copy=False))

@@ -738,8 +738,10 @@ class Parallel_Amodal_Visible_Head(nn.Module):
             return output_mask_logits, output_feature
         # comparsion
 
-        print("MY CURRENT VERSION IS ", self.version)
+        #print("MY CURRENT VERSION IS ", self.version)
         #We can confirm that spref is enabled as the config contains such said code
+        #Version is 3 for that config
+
 
         if self.version == 1:
             amodal_attention = self.amodal_pool(classes_choose(masks_logits[0], instances)).unsqueeze(1).sigmoid()

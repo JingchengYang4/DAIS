@@ -85,10 +85,10 @@ def test(params):
     """Test function."""
     args.mode = 'test'
     dataloader = BtsDataLoader(args, 'test')
-    
+
     model = BtsModel(params=args)
     model = torch.nn.DataParallel(model)
-    
+
     checkpoint = torch.load(args.checkpoint_path)
     model.load_state_dict(checkpoint['model'])
     model.eval()
@@ -115,6 +115,8 @@ def test(params):
         for _, sample in enumerate(tqdm(dataloader.data)):
             image = Variable(sample['image'].cuda())
             focal = Variable(sample['focal'].cuda())
+            print("FOCAL ", type(sample['focal']), sample['focal'])
+            #focal is 721
             # Predict
             lpg8x8, lpg4x4, lpg2x2, reduc1x1, depth_est = model(image, focal)
             pred_depths.append(depth_est.cpu().numpy().squeeze())
@@ -126,9 +128,9 @@ def test(params):
     elapsed_time = time.time() - start_time
     print('Elapesed time: %s' % str(elapsed_time))
     print('Done.')
-    
+
     save_name = 'result_' + args.model_name
-    
+
     print('Saving result pngs..')
     if not os.path.exists(os.path.dirname(save_name)):
         try:
@@ -140,7 +142,7 @@ def test(params):
         except OSError as e:
             if e.errno != errno.EEXIST:
                 raise
-    
+
     for s in tqdm(range(num_test_samples)):
         if args.dataset == 'kitti':
             date_drive = lines[s].split('/')[1]
@@ -162,28 +164,28 @@ def test(params):
             filename_gt_png = save_name + '/gt/' + scene_name + '_' + lines[s].split()[0].split('/')[1].replace(
                 '.jpg', '.png')
             filename_image_png = save_name + '/rgb/' + scene_name + '_' + lines[s].split()[0].split('/')[1]
-        
+
         rgb_path = os.path.join(args.data_path, './' + lines[s].split()[0])
         image = cv2.imread(rgb_path)
         if args.dataset == 'nyu':
             gt_path = os.path.join(args.data_path, './' + lines[s].split()[1])
             gt = cv2.imread(gt_path, -1).astype(np.float32) / 1000.0  # Visualization purpose only
             gt[gt == 0] = np.amax(gt)
-        
+
         pred_depth = pred_depths[s]
         pred_8x8 = pred_8x8s[s]
         pred_4x4 = pred_4x4s[s]
         pred_2x2 = pred_2x2s[s]
         pred_1x1 = pred_1x1s[s]
-        
+
         if args.dataset == 'kitti' or args.dataset == 'kitti_benchmark':
             pred_depth_scaled = pred_depth * 256.0
         else:
             pred_depth_scaled = pred_depth * 1000.0
-        
+
         pred_depth_scaled = pred_depth_scaled.astype(np.uint16)
         cv2.imwrite(filename_pred_png, pred_depth_scaled, [cv2.IMWRITE_PNG_COMPRESSION, 0])
-        
+
         if args.save_lpg:
             cv2.imwrite(filename_image_png, image[10:-1 - 9, 10:-1 - 9, :])
             if args.dataset == 'nyu':
@@ -212,11 +214,9 @@ def test(params):
                 plt.imsave(filename_lpg_cmap_png, np.log10(pred_2x2), cmap='Greys')
                 filename_lpg_cmap_png = filename_cmap_png.replace('.png', '_1x1.png')
                 plt.imsave(filename_lpg_cmap_png, np.log10(pred_1x1), cmap='Greys')
-    
+
     return
 
 
 if __name__ == '__main__':
     test(args)
-
-#%%

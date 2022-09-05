@@ -27,3 +27,18 @@ Install COCO API
 ```
 pip install git+https://github.com/philferriere/cocoapi.git#subdirectory=PythonAPI
 ```
+
+## Data
+
+
+## Training
+
+To train, run the following command
+```
+python tools/train_net.py --config-file configs/KINS-AmodalSegmentation/mask_rcnn_R_50_FPN_1x_parallel_CtRef_VAR_SPRef_SPRet_FM.yaml
+```
+
+To test BTS depth prediction
+```
+python bts_test.py arguments_test_eigen.txt
+```

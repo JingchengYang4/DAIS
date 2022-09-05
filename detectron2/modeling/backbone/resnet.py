@@ -4,6 +4,7 @@ import fvcore.nn.weight_init as weight_init
 import torch
 import torch.nn.functional as F
 from torch import nn
+import matplotlib.pyplot as plt
 
 from detectron2.layers import (
     Conv2d,

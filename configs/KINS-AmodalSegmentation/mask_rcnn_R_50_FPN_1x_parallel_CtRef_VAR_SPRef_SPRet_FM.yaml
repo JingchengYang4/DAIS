@@ -5,6 +5,7 @@ MODEL:
     DEPTH: 50
   ROI_HEADS:
     NAME: "Parallel_Amodal_Visible_ROIHeads"
+    BATCH_SIZE_PER_IMAGE: 100
   ROI_MASK_HEAD:
     NAME: "Parallel_Amodal_Visible_Head"
     VERSION: 3
