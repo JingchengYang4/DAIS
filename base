@@ -1,0 +1,1 @@
+python tools/train_net.py --config-file configs/KINS-AmodalSegmentation/mask_rcnn_R_50_FPN_1x_parallel_CtRef_VAR_SPRef_SPRet_FM.yaml --eval-only MODEL.WEIGHTS 'Output/mask_rcnn_parallel_CtRef_SPRef_SPRet_FM_KINS_res50_SGD_1x/model_final.pth'
