@@ -94,17 +94,27 @@ def test(params):
 
     model.load_state_dict(checkpoint['model'])
 
-    if False:
+    #print(model.module.encoder.base_model)
+
+    if True:
         weights = model.module.encoder.base_model.state_dict()
         print(type(weights))
 
         for k in weights.copy():
-            weights[k.replace('layer', 'backbone.bottom_up.res')] = weights.pop(k)
+            weights[k] = weights[k].cpu().detach().numpy()
+
+            if 'layer1' in k:
+                weights[k.replace('layer1', 'res2')] = weights.pop(k)
+            if 'layer2' in k:
+                weights[k.replace('layer2', 'res3')] = weights.pop(k)
+            if 'layer3' in k:
+                weights[k.replace('layer3', 'res4')] = weights.pop(k)
+            if 'layer4' in k:
+                weights[k.replace('layer4', 'res5')] = weights.pop(k)
 
         d = {'model': weights, '__author__': 'JingchengYang'}
         with open('../../models/bts_res50.pkl', 'wb') as handle:
             pickle.dump(d, handle, protocol=pickle.HIGHEST_PROTOCOL)
-        print(weights.keys())
         quit()
 
     model.eval()
