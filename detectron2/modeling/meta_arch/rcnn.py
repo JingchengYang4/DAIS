@@ -118,9 +118,6 @@ class GeneralizedRCNN(nn.Module):
             gt_instances = [x["targets"].to(self.device) for x in batched_inputs]
         else:
             gt_instances = None
-
-        #this is where it is being sent to I suppose
-
         features = self.backbone(images.tensor)
         if self.proposal_generator:
             proposals, proposal_losses = self.proposal_generator(images, features, gt_instances)
@@ -129,7 +126,6 @@ class GeneralizedRCNN(nn.Module):
             proposals = [x["proposals"].to(self.device) for x in batched_inputs]
             proposal_losses = {}
         _, detector_losses = self.roi_heads(images, features, proposals, gt_instances)
-        #the line above calles forward in Parallel_Amodal_Visible_ROIHeads I believe
         if self.vis_period > 0:
             storage = get_event_storage()
             if storage.iter % self.vis_period == 0:
