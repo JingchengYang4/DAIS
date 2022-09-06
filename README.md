@@ -39,10 +39,13 @@ pip install git+https://github.com/philferriere/cocoapi.git#subdirectory=PythonA
 ```
 wget 'GET DATASET FROM KITTI'
 mv data_object_image_2.zip DAIS
+cd DAIS
 mkdir datasets/KINS
 mv data_object_image_2.zip datasets/KINS
 cd datasets/KINS
 unzip data_object_image_2.zip
+wget https://github.com/qqlu/Amodal-Instance-Segmentation-through-KINS-Dataset/raw/master/instances_train.json
+wget https://github.com/qqlu/Amodal-Instance-Segmentation-through-KINS-Dataset/raw/master/instances_val.json
 ```
 
 
