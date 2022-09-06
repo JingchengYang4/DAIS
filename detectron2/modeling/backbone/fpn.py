@@ -52,7 +52,7 @@ class FPN(Backbone):
         super(FPN, self).__init__()
         assert isinstance(bottom_up, Backbone)
 
-        print("I EXTRACT DEPTH ", extract_depth)
+        #print("I EXTRACT DEPTH ", extract_depth)
         self.depth = extract_depth
         if extract_depth:
             self.dp = DepthPredictionModule()
@@ -248,6 +248,7 @@ def build_resnet_fpn_backbone(cfg, input_shape: ShapeSpec):
         norm=cfg.MODEL.FPN.NORM,
         top_block=LastLevelMaxPool(),
         fuse_type=cfg.MODEL.FPN.FUSE_TYPE,
+        extract_depth=cfg.MODEL.DEPTH_FEATURE_EXTRACTION
     )
     return backbone
 
