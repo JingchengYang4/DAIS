@@ -1,19 +1,14 @@
 # Copyright (c) Facebook, Inc. and its affiliates. All Rights Reserved
 import math
 import fvcore.nn.weight_init as weight_init
-import torch
 import torch.nn.functional as F
 from torch import nn
-import matplotlib.pyplot as plt
-import numpy as np
 
 from detectron2.layers import Conv2d, ShapeSpec, get_norm
 
 from .backbone import Backbone
 from .build import BACKBONE_REGISTRY
 from .resnet import build_resnet_backbone
-
-from detectron2.modeling.depth_pred import *
 
 __all__ = ["build_resnet_fpn_backbone", "build_retinanet_resnet_fpn_backbone", "FPN"]
 
@@ -24,8 +19,7 @@ class FPN(Backbone):
     It creates pyramid features built on top of some input feature maps.
     """
 
-    def __init__(self, bottom_up, in_features, out_channels, norm="", top_block=None, fuse_type="sum",
-                 extract_depth=False):
+    def __init__(self, bottom_up, in_features, out_channels, norm="", top_block=None, fuse_type="sum"):
         """
         Args:
             bottom_up (Backbone): module representing the bottom up subnetwork.
@@ -51,11 +45,6 @@ class FPN(Backbone):
         """
         super(FPN, self).__init__()
         assert isinstance(bottom_up, Backbone)
-
-        #print("I EXTRACT DEPTH ", extract_depth)
-        self.depth = extract_depth
-        if extract_depth:
-            self.dp = DepthPredictionModule()
 
         # Feature map strides and channels from the bottom up network (e.g. ResNet)
         in_strides = [bottom_up.out_feature_strides[f] for f in in_features]
@@ -126,29 +115,6 @@ class FPN(Backbone):
                 paper convention: "p<stage>", where stage has stride = 2 ** stage e.g.,
                 ["p2", "p3", ..., "p6"].
         """
-
-        if self.depth:
-            #print(x.size())
-            image = torch.flip(x, [1])#switches bgr to rgb
-            #print(image.size())
-            image -= torch.min(image)#recenter RGB to 0-255
-            image /= 255
-            depth = self.dp.Predict(image)
-
-            depth_tensor = torch.tensor([[np.log10(depth)]]).cuda()
-            #print(x.size())
-            #print(depth_tensor.size())
-            x = torch.cat((x, depth_tensor), 1)
-            #print(x.size())
-
-            #print(depth_tensor.size())
-            if False:
-                f, axarrr = plt.subplots(2, 1)
-                axarrr[0].imshow(image.cpu()[0].permute(1, 2, 0))
-                #print(depth, type(depth))
-                axarrr[1].imshow(np.log10(depth))
-                plt.show()
-            #quit()
 
         # Reverse feature maps into top-down order (from low to high resolution)
         bottom_up_features = self.bottom_up(x)
@@ -247,8 +213,7 @@ def build_resnet_fpn_backbone(cfg, input_shape: ShapeSpec):
         out_channels=out_channels,
         norm=cfg.MODEL.FPN.NORM,
         top_block=LastLevelMaxPool(),
-        fuse_type=cfg.MODEL.FPN.FUSE_TYPE,
-        extract_depth=cfg.MODEL.DEPTH_FEATURE_EXTRACTION
+        fuse_type=cfg.MODEL.FPN.FUSE_TYPE
     )
     return backbone
 
@@ -272,7 +237,6 @@ def build_retinanet_resnet_fpn_backbone(cfg, input_shape: ShapeSpec):
         out_channels=out_channels,
         norm=cfg.MODEL.FPN.NORM,
         top_block=LastLevelP6P7(in_channels_p6p7, out_channels),
-        fuse_type=cfg.MODEL.FPN.FUSE_TYPE,
-        extract_depth=cfg.MODEL.DEPTH_FEATURE_EXTRACTION
+        fuse_type=cfg.MODEL.FPN.FUSE_TYPE
     )
     return backbone

@@ -1,5 +1,7 @@
 # Copyright (c) Facebook, Inc. and its affiliates. All Rights Reserved
 import logging
+
+import matplotlib.pyplot as plt
 import numpy as np
 import torch
 from torch import nn
@@ -10,6 +12,7 @@ from detectron2.utils.logger import log_first_n
 from detectron2.utils.visualizer import Visualizer
 
 from ..backbone import build_backbone
+from detectron2.modeling.backbone.depth_prediction import DepthPredictionModule
 from ..postprocessing import detector_postprocess
 from ..proposal_generator import build_proposal_generator
 from ..roi_heads import build_roi_heads
@@ -36,6 +39,10 @@ class GeneralizedRCNN(nn.Module):
         self.roi_heads = build_roi_heads(cfg, self.backbone.output_shape())
         self.input_format = cfg.INPUT.FORMAT
         self.vis_period = cfg.VIS_PERIOD
+        self.extract_depth = cfg.MODEL.DEPTH_FEATURE_EXTRACTION
+        if self.extract_depth:
+            self.depth_predictor = DepthPredictionModule()
+
 
         assert len(cfg.MODEL.PIXEL_MEAN) == len(cfg.MODEL.PIXEL_STD)
         num_channels = len(cfg.MODEL.PIXEL_MEAN)
@@ -109,6 +116,14 @@ class GeneralizedRCNN(nn.Module):
             return self.inference(batched_inputs, do_postprocess=do_postprocess)
         images = self.preprocess_image(batched_inputs)
 
+        if False:
+            print(batched_inputs[0]['instances'])
+            gtmasks = batched_inputs[0]['instances'].gt_visible_masks.tensor
+            for mask in gtmasks:
+                plt.imshow(mask.numpy())
+                plt.show()
+            quit()
+
         if "instances" in batched_inputs[0]:
             gt_instances = [x["instances"].to(self.device) for x in batched_inputs]
         elif "targets" in batched_inputs[0]:
@@ -118,18 +133,43 @@ class GeneralizedRCNN(nn.Module):
             gt_instances = [x["targets"].to(self.device) for x in batched_inputs]
         else:
             gt_instances = None
+
+        if self.extract_depth:
+            image = torch.flip(images.tensor, [1])#switches bgr to rgb
+            image -= torch.min(image)#recenter RGB to 0-255
+            image /= 255
+            depth = self.depth_predictor.Predict(image)
+            depth_tensor = torch.tensor([[np.log10(depth)]]).cuda()
+            images.tensor = torch.cat((images.tensor, depth_tensor), 1)
+            if False:
+                f, axarrr = plt.subplots(2, 1)
+                axarrr[0].imshow(image.cpu()[0].permute(1, 2, 0))
+                #print(depth, type(depth))
+                axarrr[1].imshow(np.log10(depth))
+                plt.show()
+
+        #I WILL DEAL WITH YOU IN THE FUTURE, AGHHHH!!!
         features = self.backbone(images.tensor)
         if self.proposal_generator:
+            #this is true when running the code
             proposals, proposal_losses = self.proposal_generator(images, features, gt_instances)
         else:
             assert "proposals" in batched_inputs[0]
             proposals = [x["proposals"].to(self.device) for x in batched_inputs]
             proposal_losses = {}
-        _, detector_losses = self.roi_heads(images, features, proposals, gt_instances)
+
+        #print(self.roi_heads)
+        #roi head shere
+        if self.extract_depth:
+            _, detector_losses = self.roi_heads(images, features, proposals, gt_instances, depth=depth_tensor)
+        else:
+            _, detector_losses = self.roi_heads(images, features, proposals, gt_instances)
+
         if self.vis_period > 0:
             storage = get_event_storage()
             if storage.iter % self.vis_period == 0:
                 self.visualize_training(batched_inputs, proposals)
+
         losses = {}
         losses.update(detector_losses)
         losses.update(proposal_losses)

@@ -124,6 +124,8 @@ class ROIPooler(nn.Module):
         """
         super().__init__()
 
+        #print("OUTPUT SIZE IS ", output_size)
+
         if isinstance(output_size, int):
             output_size = (output_size, output_size)
         assert len(output_size) == 2
@@ -177,7 +179,7 @@ class ROIPooler(nn.Module):
         assert canonical_box_size > 0
         self.canonical_box_size = canonical_box_size
 
-    def forward(self, x, box_lists):
+    def forward(self, x, box_lists, depths=None):
         """
         Args:
             x (list[Tensor]): A list of feature maps of NCHW shape, with scales matching those
@@ -186,6 +188,7 @@ class ROIPooler(nn.Module):
                 A list of N Boxes or N RotatedBoxes, where N is the number of images in the batch.
                 The box coordinates are defined on the original image and
                 will be scaled by the `scales` argument of :class:`ROIPooler`.
+            depths (list[Tensor]): A list of depths maps of NCHW shape, with scales matching the feature maps
 
         Returns:
             Tensor:

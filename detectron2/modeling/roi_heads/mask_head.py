@@ -1,4 +1,5 @@
 # Copyright (c) Facebook, Inc. and its affiliates. All Rights Reserved
+import matplotlib.pyplot as plt
 from PIL import Image
 import copy
 import numpy as np
@@ -811,6 +812,7 @@ class Parallel_Amodal_Visible_Head(nn.Module):
 
             if self.SPRef:
                 pred_amodal_masks = classes_choose(masks_logits[0], instances).unsqueeze(1)
+
                 nn_latent_vectors = self.recon_net.encode(pred_amodal_masks).view(pred_amodal_masks.size(0), -1)
                 if instances[0].has("gt_classes"):
                     shape_prior = self.recon_net.nearest_decode(nn_latent_vectors,
@@ -827,6 +829,13 @@ class Parallel_Amodal_Visible_Head(nn.Module):
                 amodal_masks_logits_, amodal_feature_maps_ = self.single_head_forward(x * visible_attention, "amodal")
 
             output_mask_logits.append([amodal_masks_logits_, visible_masks_logits_])
+
+            if False:
+                print(amodal_masks_logits_.size())
+                for mask in amodal_masks_logits_:
+                    plt.imshow(mask[0].cpu().detach().numpy())
+                    plt.show()
+                quit()
 
             if instances[0].has("gt_masks"):
                 mask_side_len = x.size(2)

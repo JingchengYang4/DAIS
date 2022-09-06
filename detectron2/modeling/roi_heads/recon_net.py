@@ -276,6 +276,7 @@ class General_Recon_Net(nn.Module):
         for layer in self.decoder:
             x = layer(x)
         x = self.outconv(x)
+
         return x, latent_vector
 
     def encode(self, x):

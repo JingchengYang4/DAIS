@@ -1,5 +1,7 @@
 # Copyright (c) Facebook, Inc. and its affiliates. All Rights Reserved
 import logging
+
+import matplotlib.pyplot as plt
 import numpy as np
 import os
 from typing import Dict
@@ -753,6 +755,7 @@ class Parallel_Amodal_Visible_ROIHeads(ROIHeads):
         self._init_box_head(cfg)
         self._init_mask_head(cfg)
         self.iter = 0
+        self.depth_aware =  cfg.MODEL.DEPTH_FEATURE_EXTRACTION
 
     def _init_box_head(self, cfg):
         # fmt: off
@@ -832,10 +835,26 @@ class Parallel_Amodal_Visible_ROIHeads(ROIHeads):
         else:
             self.recls = None
 
-    def forward(self, images, features, proposals, targets=None):
+    def forward(self, images, features, proposals, targets=None, depth=None):
         """
         See :class:`ROIHeads.forward`.
         """
+
+        if depth is not None:
+            #print("BRUH I HAVE DEPTH!")
+            depth_list = []
+            for k in self.in_features:
+                #print(features[k].size())
+                scaled_depth = F.interpolate(depth, size=features[k][0][0].size(), mode='bilinear', align_corners=True)
+                depth_list.append(scaled_depth)
+                #print(scaled_depth.size())
+                #plt.imshow(scaled_depth.cpu().detach().numpy()[0][0])
+                #plt.show()
+            self.depth_list = depth_list
+            del depth_list
+            del depth
+            #quit()
+
         self.targets = targets
         del images
         if self.training:
@@ -843,8 +862,11 @@ class Parallel_Amodal_Visible_ROIHeads(ROIHeads):
         del targets
         features_list = [features[f] for f in self.in_features]
         if self.training:
-            losses = self._forward_box(features_list, proposals)
 
+            if self.depth_aware:
+                losses = self._forward_box(features_list, proposals, self.depth_list)
+            else:
+                losses = self._forward_box(features_list, proposals)
             # During training the proposals used by the box head are
             # used by the mask, keypoint (and densepose) heads.
 
@@ -891,7 +913,7 @@ class Parallel_Amodal_Visible_ROIHeads(ROIHeads):
         instances = self._forward_mask(features, instances)
         return instances
 
-    def _forward_box(self, features, proposals):
+    def _forward_box(self, features, proposals, depth_list=None):
         """
         Forward logic of the box prediction branch.
 
@@ -906,7 +928,12 @@ class Parallel_Amodal_Visible_ROIHeads(ROIHeads):
             In training, a dict of losses.
             In inference, a list of `Instances`, the predicted instances.
         """
-        box_features = self.box_pooler(features, [x.proposal_boxes for x in proposals])
+
+        box_features = self.box_pooler(features, [x.proposal_boxes for x in proposals], depth_list)
+
+        print(box_features.size())
+        quit()
+
         box_features = self.box_head(box_features)
         self.pred_class_logits, pred_proposal_deltas = self.box_predictor(box_features)
         del box_features

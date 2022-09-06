@@ -2,6 +2,7 @@
 import numpy as np
 import fvcore.nn.weight_init as weight_init
 import torch
+from matplotlib import pyplot as plt
 from torch import nn
 from torch.nn import functional as F
 
@@ -240,6 +241,7 @@ class ReclsConvFCHead(nn.Module):
             for layer in self.fcs:
                 x = F.relu(layer(x), inplace=True)
         x = self.recls(x)
+
         return x
 
     @property
