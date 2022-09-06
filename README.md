@@ -15,12 +15,15 @@ Install requirements
 pip install -r requirements.txt
 ```
 
+Install COCO API
+```
+pip install git+https://github.com/philferriere/cocoapi.git#subdirectory=PythonAPI
+```
+
 Setup Detectron2
 
 This is a heavily modified version of Detectron2, newer versions are not yet compatible.
-```
-python -m pip install -e .
-```
+
 Setup may require you to downgrade to GCC7 temporarily.
 ```
 sudo apt-get install gcc-7 g++-7
@@ -30,9 +33,9 @@ sudo update-alternatives --install /usr/bin/gcc gcc /usr/bin/gcc-7 60 --slave /u
 sudo update-alternatives --config gcc
 ```
 
-Install COCO API
+Build Detectron2
 ```
-pip install git+https://github.com/philferriere/cocoapi.git#subdirectory=PythonAPI
+python -m pip install -e .
 ```
 
 ## Data
