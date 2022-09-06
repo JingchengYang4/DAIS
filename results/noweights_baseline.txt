@@ -1,0 +1,440 @@
+(base)  [01;32mjingchengyang4@amodal-1 [00m: [01;34m~ [00m$ conda activate D [Kdais
+(dais)  [01;32mjingchengyang4@amodal-1 [00m: [01;34m~ [00m$ cd DAIS
+(dais)  [01;32mjingchengyang4@amodal-1 [00m: [01;34m~/DAIS [00m$ python tools/train_net.py --config-file configs/KINS-AmodalSegmentation/mask_rcnn_R_50_FPN_1x_parallel_CtRef_VAR_SPRef_SPRet_FM_NM.yaml --eval-only MODEL.WEIGHTS 'output/NoModel/mask_rcnn_parallel_CtRef_SPRef_SPRet_FM_KINS_res50_SGD_1x/model_final.pth'
+Command Line Args: Namespace(config_file='configs/KINS-AmodalSegmentation/mask_rcnn_R_50_FPN_1x_parallel_CtRef_VAR_SPRef_SPRet_FM_NM.yaml', dist_url='tcp://127.0.0.1:50153', eval_only=True, machine_rank=0, num_gpus=1, num_machines=1, opts=['MODEL.WEIGHTS', 'output/NoModel/mask_rcnn_parallel_CtRef_SPRef_SPRet_FM_KINS_res50_SGD_1x/model_final.pth'], resume=False)
+Config 'configs/KINS-AmodalSegmentation/mask_rcnn_R_50_FPN_1x_parallel_CtRef_VAR_SPRef_SPRet_FM_NM.yaml' has no VERSION. Assuming it to be compatible with latest v2.
+ [32m[09/06 13:29:50 detectron2]:  [0mFull config saved to /home/jingchengyang4/DAIS/output/NoModel/mask_rcnn_parallel_CtRef_SPRef_SPRet_FM_KINS_res50_SGD_1x/config.yaml
+ [32m[09/06 13:29:50 d2.utils.env]:  [0mUsing a generated random seed 51018243
+CHANNELS 3
+ [32m[09/06 13:29:54 d2.engine.defaults]:  [0mLoading recon net and codebook
+ [32m[09/06 13:29:55 fvcore.common.checkpoint]:  [0mLoading checkpoint from output/NoModel/mask_rcnn_parallel_CtRef_SPRef_SPRet_FM_KINS_res50_SGD_1x/model_final.pth
+ [32m[09/06 13:29:58 d2.engine.defaults]:  [0mVersion:mask_rcnn_parallel_CtRef_SPRef_SPRet_FM_KINS_res50_SGD_1x
+ [32m[09/06 13:30:01 d2.data.datasets.kins]:  [0mLoading datasets/KINS/instances_val.json takes 2.41 seconds.
+ [32m[09/06 13:30:01 d2.data.datasets.kins]:  [0mLoaded 7517 images in COCO format from datasets/KINS/instances_val.json
+ [32m[09/06 13:30:01 d2.data.datasets.kins]:  [0mdetecting visible: False
+ [32m[09/06 13:30:02 d2.data.build]:  [0mDistribution of training instances among all 7 categories:
+ [36m|  category  | #instances   |  category  | #instances   |  category  | #instances   |
+|:----------:|:-------------|:----------:|:-------------|:----------:|:-------------|
+|  cyclist   | 2247         | pedestrian | 9999         |    car     | 63678        |
+|    tram    | 643          |   truck    | 776          |    van     | 5336         |
+|    misc    | 9813         |            |              |            |              |
+|   total    | 92492        |            |              |            |              | [0m
+ [32m[09/06 13:30:04 d2.evaluation.evaluator]:  [0mStart inference on 7517 images
+ [32m[09/06 13:31:05 d2.evaluation.evaluator]:  [0mInference done 50/7517. 1.2101 s / img. ETA=2:30:36
+ [32m[09/06 13:32:04 d2.evaluation.evaluator]:  [0mInference done 100/7517. 1.1989 s / img. ETA=2:28:12
+ [32m[09/06 13:33:00 d2.evaluation.evaluator]:  [0mInference done 150/7517. 1.1700 s / img. ETA=2:23:39
+ [32m[09/06 13:33:57 d2.evaluation.evaluator]:  [0mInference done 200/7517. 1.1598 s / img. ETA=2:21:26
+ [32m[09/06 13:34:52 d2.evaluation.evaluator]:  [0mInference done 250/7517. 1.1508 s / img. ETA=2:19:23
+ [32m[09/06 13:35:50 d2.evaluation.evaluator]:  [0mInference done 300/7517. 1.1516 s / img. ETA=2:18:31
+ [32m[09/06 13:36:52 d2.evaluation.evaluator]:  [0mInference done 350/7517. 1.1632 s / img. ETA=2:18:56
+ [32m[09/06 13:37:47 d2.evaluation.evaluator]:  [0mInference done 400/7517. 1.1550 s / img. ETA=2:16:59
+ [32m[09/06 13:38:44 d2.evaluation.evaluator]:  [0mInference done 450/7517. 1.1531 s / img. ETA=2:15:48
+ [32m[09/06 13:39:39 d2.evaluation.evaluator]:  [0mInference done 500/7517. 1.1474 s / img. ETA=2:14:11
+ [32m[09/06 13:40:31 d2.evaluation.evaluator]:  [0mInference done 550/7517. 1.1391 s / img. ETA=2:12:15
+ [32m[09/06 13:41:29 d2.evaluation.evaluator]:  [0mInference done 600/7517. 1.1402 s / img. ETA=2:11:27
+ [32m[09/06 13:42:21 d2.evaluation.evaluator]:  [0mInference done 650/7517. 1.1320 s / img. ETA=2:09:33
+ [32m[09/06 13:43:18 d2.evaluation.evaluator]:  [0mInference done 700/7517. 1.1335 s / img. ETA=2:08:47
+ [32m[09/06 13:44:14 d2.evaluation.evaluator]:  [0mInference done 750/7517. 1.1325 s / img. ETA=2:07:43
+ [32m[09/06 13:45:13 d2.evaluation.evaluator]:  [0mInference done 800/7517. 1.1346 s / img. ETA=2:07:01
+ [32m[09/06 13:46:05 d2.evaluation.evaluator]:  [0mInference done 850/7517. 1.1293 s / img. ETA=2:05:29
+ [32m[09/06 13:46:59 d2.evaluation.evaluator]:  [0mInference done 900/7517. 1.1267 s / img. ETA=2:04:15
+ [32m[09/06 13:47:50 d2.evaluation.evaluator]:  [0mInference done 950/7517. 1.1215 s / img. ETA=2:02:44
+ [32m[09/06 13:48:49 d2.evaluation.evaluator]:  [0mInference done 1000/7517. 1.1239 s / img. ETA=2:02:04
+ [32m[09/06 13:49:48 d2.evaluation.evaluator]:  [0mInference done 1050/7517. 1.1272 s / img. ETA=2:01:29
+ [32m[09/06 13:50:41 d2.evaluation.evaluator]:  [0mInference done 1100/7517. 1.1239 s / img. ETA=2:00:12
+ [32m[09/06 13:51:38 d2.evaluation.evaluator]:  [0mInference done 1150/7517. 1.1248 s / img. ETA=1:59:21
+ [32m[09/06 13:52:30 d2.evaluation.evaluator]:  [0mInference done 1200/7517. 1.1213 s / img. ETA=1:58:02
+ [32m[09/06 13:53:29 d2.evaluation.evaluator]:  [0mInference done 1250/7517. 1.1231 s / img. ETA=1:57:18
+ [32m[09/06 13:54:27 d2.evaluation.evaluator]:  [0mInference done 1300/7517. 1.1250 s / img. ETA=1:56:34
+ [32m[09/06 13:55:25 d2.evaluation.evaluator]:  [0mInference done 1350/7517. 1.1262 s / img. ETA=1:55:45
+ [32m[09/06 13:56:23 d2.evaluation.evaluator]:  [0mInference done 1400/7517. 1.1269 s / img. ETA=1:54:53
+ [32m[09/06 13:57:19 d2.evaluation.evaluator]:  [0mInference done 1450/7517. 1.1273 s / img. ETA=1:53:59
+ [32m[09/06 13:58:17 d2.evaluation.evaluator]:  [0mInference done 1500/7517. 1.1281 s / img. ETA=1:53:07
+ [32m[09/06 13:59:11 d2.evaluation.evaluator]:  [0mInference done 1550/7517. 1.1264 s / img. ETA=1:52:01
+ [32m[09/06 14:00:07 d2.evaluation.evaluator]:  [0mInference done 1600/7517. 1.1265 s / img. ETA=1:51:05
+ [32m[09/06 14:01:00 d2.evaluation.evaluator]:  [0mInference done 1650/7517. 1.1244 s / img. ETA=1:49:56
+ [32m[09/06 14:01:59 d2.evaluation.evaluator]:  [0mInference done 1700/7517. 1.1258 s / img. ETA=1:49:08
+ [32m[09/06 14:02:56 d2.evaluation.evaluator]:  [0mInference done 1750/7517. 1.1265 s / img. ETA=1:48:16
+ [32m[09/06 14:03:50 d2.evaluation.evaluator]:  [0mInference done 1800/7517. 1.1253 s / img. ETA=1:47:13
+ [32m[09/06 14:04:45 d2.evaluation.evaluator]:  [0mInference done 1850/7517. 1.1243 s / img. ETA=1:46:11
+ [32m[09/06 14:05:35 d2.evaluation.evaluator]:  [0mInference done 1900/7517. 1.1211 s / img. ETA=1:44:57
+ [32m[09/06 14:06:24 d2.evaluation.evaluator]:  [0mInference done 1950/7517. 1.1172 s / img. ETA=1:43:39
+ [32m[09/06 14:07:12 d2.evaluation.evaluator]:  [0mInference done 2000/7517. 1.1135 s / img. ETA=1:42:23
+ [32m[09/06 14:08:06 d2.evaluation.evaluator]:  [0mInference done 2050/7517. 1.1125 s / img. ETA=1:41:21
+ [32m[09/06 14:09:01 d2.evaluation.evaluator]:  [0mInference done 2100/7517. 1.1122 s / img. ETA=1:40:24
+ [32m[09/06 14:09:50 d2.evaluation.evaluator]:  [0mInference done 2150/7517. 1.1092 s / img. ETA=1:39:13
+ [32m[09/06 14:10:36 d2.evaluation.evaluator]:  [0mInference done 2200/7517. 1.1051 s / img. ETA=1:37:55
+ [32m[09/06 14:11:24 d2.evaluation.evaluator]:  [0mInference done 2250/7517. 1.1019 s / img. ETA=1:36:43
+ [32m[09/06 14:12:15 d2.evaluation.evaluator]:  [0mInference done 2300/7517. 1.1002 s / img. ETA=1:35:39
+ [32m[09/06 14:13:04 d2.evaluation.evaluator]:  [0mInference done 2350/7517. 1.0975 s / img. ETA=1:34:30
+ [32m[09/06 14:13:54 d2.evaluation.evaluator]:  [0mInference done 2400/7517. 1.0955 s / img. ETA=1:33:25
+ [32m[09/06 14:14:49 d2.evaluation.evaluator]:  [0mInference done 2450/7517. 1.0954 s / img. ETA=1:32:30
+ [32m[09/06 14:15:43 d2.evaluation.evaluator]:  [0mInference done 2500/7517. 1.0953 s / img. ETA=1:31:35
+ [32m[09/06 14:16:35 d2.evaluation.evaluator]:  [0mInference done 2550/7517. 1.0942 s / img. ETA=1:30:34
+ [32m[09/06 14:17:29 d2.evaluation.evaluator]:  [0mInference done 2600/7517. 1.0938 s / img. ETA=1:29:38
+ [32m[09/06 14:18:21 d2.evaluation.evaluator]:  [0mInference done 2650/7517. 1.0928 s / img. ETA=1:28:38
+ [32m[09/06 14:19:17 d2.evaluation.evaluator]:  [0mInference done 2700/7517. 1.0932 s / img. ETA=1:27:45
+ [32m[09/06 14:20:10 d2.evaluation.evaluator]:  [0mInference done 2750/7517. 1.0926 s / img. ETA=1:26:48
+ [32m[09/06 14:21:03 d2.evaluation.evaluator]:  [0mInference done 2800/7517. 1.0922 s / img. ETA=1:25:51
+ [32m[09/06 14:21:48 d2.evaluation.evaluator]:  [0mInference done 2850/7517. 1.0888 s / img. ETA=1:24:41
+ [32m[09/06 14:22:40 d2.evaluation.evaluator]:  [0mInference done 2900/7517. 1.0877 s / img. ETA=1:23:42
+ [32m[09/06 14:23:29 d2.evaluation.evaluator]:  [0mInference done 2950/7517. 1.0862 s / img. ETA=1:22:40
+ [32m[09/06 14:24:23 d2.evaluation.evaluator]:  [0mInference done 3000/7517. 1.0859 s / img. ETA=1:21:45
+ [32m[09/06 14:25:14 d2.evaluation.evaluator]:  [0mInference done 3050/7517. 1.0848 s / img. ETA=1:20:45
+ [32m[09/06 14:26:04 d2.evaluation.evaluator]:  [0mInference done 3100/7517. 1.0835 s / img. ETA=1:19:45
+ [32m[09/06 14:26:56 d2.evaluation.evaluator]:  [0mInference done 3150/7517. 1.0830 s / img. ETA=1:18:49
+ [32m[09/06 14:27:53 d2.evaluation.evaluator]:  [0mInference done 3200/7517. 1.0837 s / img. ETA=1:17:58
+ [32m[09/06 14:28:45 d2.evaluation.evaluator]:  [0mInference done 3250/7517. 1.0831 s / img. ETA=1:17:01
+ [32m[09/06 14:29:37 d2.evaluation.evaluator]:  [0mInference done 3300/7517. 1.0823 s / img. ETA=1:16:03
+ [32m[09/06 14:30:25 d2.evaluation.evaluator]:  [0mInference done 3350/7517. 1.0806 s / img. ETA=1:15:02
+ [32m[09/06 14:31:23 d2.evaluation.evaluator]:  [0mInference done 3400/7517. 1.0818 s / img. ETA=1:14:13
+ [32m[09/06 14:32:19 d2.evaluation.evaluator]:  [0mInference done 3450/7517. 1.0824 s / img. ETA=1:13:22
+ [32m[09/06 14:33:11 d2.evaluation.evaluator]:  [0mInference done 3500/7517. 1.0816 s / img. ETA=1:12:24
+ [32m[09/06 14:34:01 d2.evaluation.evaluator]:  [0mInference done 3550/7517. 1.0805 s / img. ETA=1:11:26
+ [32m[09/06 14:34:54 d2.evaluation.evaluator]:  [0mInference done 3600/7517. 1.0802 s / img. ETA=1:10:31
+ [32m[09/06 14:35:43 d2.evaluation.evaluator]:  [0mInference done 3650/7517. 1.0788 s / img. ETA=1:09:31
+ [32m[09/06 14:36:34 d2.evaluation.evaluator]:  [0mInference done 3700/7517. 1.0782 s / img. ETA=1:08:35
+ [32m[09/06 14:37:28 d2.evaluation.evaluator]:  [0mInference done 3750/7517. 1.0780 s / img. ETA=1:07:40
+ [32m[09/06 14:38:25 d2.evaluation.evaluator]:  [0mInference done 3800/7517. 1.0789 s / img. ETA=1:06:50
+ [32m[09/06 14:39:21 d2.evaluation.evaluator]:  [0mInference done 3850/7517. 1.0795 s / img. ETA=1:05:58
+ [32m[09/06 14:40:15 d2.evaluation.evaluator]:  [0mInference done 3900/7517. 1.0796 s / img. ETA=1:05:04
+ [32m[09/06 14:41:09 d2.evaluation.evaluator]:  [0mInference done 3950/7517. 1.0795 s / img. ETA=1:04:10
+ [32m[09/06 14:42:06 d2.evaluation.evaluator]:  [0mInference done 4000/7517. 1.0801 s / img. ETA=1:03:18
+ [32m[09/06 14:43:02 d2.evaluation.evaluator]:  [0mInference done 4050/7517. 1.0808 s / img. ETA=1:02:27
+ [32m[09/06 14:43:53 d2.evaluation.evaluator]:  [0mInference done 4100/7517. 1.0799 s / img. ETA=1:01:29
+ [32m[09/06 14:44:43 d2.evaluation.evaluator]:  [0mInference done 4150/7517. 1.0789 s / img. ETA=1:00:32
+ [32m[09/06 14:45:34 d2.evaluation.evaluator]:  [0mInference done 4200/7517. 1.0782 s / img. ETA=0:59:36
+ [32m[09/06 14:46:24 d2.evaluation.evaluator]:  [0mInference done 4250/7517. 1.0774 s / img. ETA=0:58:39
+ [32m[09/06 14:47:20 d2.evaluation.evaluator]:  [0mInference done 4300/7517. 1.0778 s / img. ETA=0:57:47
+ [32m[09/06 14:48:11 d2.evaluation.evaluator]:  [0mInference done 4350/7517. 1.0772 s / img. ETA=0:56:51
+ [32m[09/06 14:49:01 d2.evaluation.evaluator]:  [0mInference done 4400/7517. 1.0764 s / img. ETA=0:55:55
+ [32m[09/06 14:49:50 d2.evaluation.evaluator]:  [0mInference done 4450/7517. 1.0753 s / img. ETA=0:54:57
+ [32m[09/06 14:50:43 d2.evaluation.evaluator]:  [0mInference done 4500/7517. 1.0751 s / img. ETA=0:54:03
+ [32m[09/06 14:51:39 d2.evaluation.evaluator]:  [0mInference done 4550/7517. 1.0756 s / img. ETA=0:53:11
+ [32m[09/06 14:52:31 d2.evaluation.evaluator]:  [0mInference done 4600/7517. 1.0752 s / img. ETA=0:52:16
+ [32m[09/06 14:53:26 d2.evaluation.evaluator]:  [0mInference done 4650/7517. 1.0754 s / img. ETA=0:51:23
+ [32m[09/06 14:54:20 d2.evaluation.evaluator]:  [0mInference done 4700/7517. 1.0754 s / img. ETA=0:50:29
+ [32m[09/06 14:55:14 d2.evaluation.evaluator]:  [0mInference done 4750/7517. 1.0756 s / img. ETA=0:49:36
+ [32m[09/06 14:56:06 d2.evaluation.evaluator]:  [0mInference done 4800/7517. 1.0752 s / img. ETA=0:48:41
+ [32m[09/06 14:56:58 d2.evaluation.evaluator]:  [0mInference done 4850/7517. 1.0749 s / img. ETA=0:47:46
+ [32m[09/06 14:57:52 d2.evaluation.evaluator]:  [0mInference done 4900/7517. 1.0748 s / img. ETA=0:46:52
+ [32m[09/06 14:58:38 d2.evaluation.evaluator]:  [0mInference done 4950/7517. 1.0733 s / img. ETA=0:45:55
+ [32m[09/06 14:59:38 d2.evaluation.evaluator]:  [0mInference done 5000/7517. 1.0745 s / img. ETA=0:45:04
+ [32m[09/06 15:00:33 d2.evaluation.evaluator]:  [0mInference done 5050/7517. 1.0749 s / img. ETA=0:44:11
+ [32m[09/06 15:01:27 d2.evaluation.evaluator]:  [0mInference done 5100/7517. 1.0748 s / img. ETA=0:43:17
+ [32m[09/06 15:02:25 d2.evaluation.evaluator]:  [0mInference done 5150/7517. 1.0757 s / img. ETA=0:42:26
+ [32m[09/06 15:03:22 d2.evaluation.evaluator]:  [0mInference done 5200/7517. 1.0764 s / img. ETA=0:41:34
+ [32m[09/06 15:04:12 d2.evaluation.evaluator]:  [0mInference done 5250/7517. 1.0755 s / img. ETA=0:40:38
+ [32m[09/06 15:05:12 d2.evaluation.evaluator]:  [0mInference done 5300/7517. 1.0769 s / img. ETA=0:39:47
+ [32m[09/06 15:06:10 d2.evaluation.evaluator]:  [0mInference done 5350/7517. 1.0775 s / img. ETA=0:38:54
+ [32m[09/06 15:07:04 d2.evaluation.evaluator]:  [0mInference done 5400/7517. 1.0776 s / img. ETA=0:38:01
+ [32m[09/06 15:08:02 d2.evaluation.evaluator]:  [0mInference done 5450/7517. 1.0783 s / img. ETA=0:37:08
+ [32m[09/06 15:08:56 d2.evaluation.evaluator]:  [0mInference done 5500/7517. 1.0784 s / img. ETA=0:36:15
+ [32m[09/06 15:09:48 d2.evaluation.evaluator]:  [0mInference done 5550/7517. 1.0780 s / img. ETA=0:35:20
+ [32m[09/06 15:10:46 d2.evaluation.evaluator]:  [0mInference done 5600/7517. 1.0788 s / img. ETA=0:34:27
+ [32m[09/06 15:11:39 d2.evaluation.evaluator]:  [0mInference done 5650/7517. 1.0786 s / img. ETA=0:33:33
+ [32m[09/06 15:12:27 d2.evaluation.evaluator]:  [0mInference done 5700/7517. 1.0775 s / img. ETA=0:32:37
+ [32m[09/06 15:13:21 d2.evaluation.evaluator]:  [0mInference done 5750/7517. 1.0775 s / img. ETA=0:31:44
+ [32m[09/06 15:14:16 d2.evaluation.evaluator]:  [0mInference done 5800/7517. 1.0777 s / img. ETA=0:30:50
+ [32m[09/06 15:15:11 d2.evaluation.evaluator]:  [0mInference done 5850/7517. 1.0779 s / img. ETA=0:29:56
+ [32m[09/06 15:16:11 d2.evaluation.evaluator]:  [0mInference done 5900/7517. 1.0790 s / img. ETA=0:29:04
+ [32m[09/06 15:17:06 d2.evaluation.evaluator]:  [0mInference done 5950/7517. 1.0791 s / img. ETA=0:28:10
+ [32m[09/06 15:18:02 d2.evaluation.evaluator]:  [0mInference done 6000/7517. 1.0795 s / img. ETA=0:27:17
+ [32m[09/06 15:18:53 d2.evaluation.evaluator]:  [0mInference done 6050/7517. 1.0790 s / img. ETA=0:26:22
+ [32m[09/06 15:19:47 d2.evaluation.evaluator]:  [0mInference done 6100/7517. 1.0789 s / img. ETA=0:25:28
+ [32m[09/06 15:20:39 d2.evaluation.evaluator]:  [0mInference done 6150/7517. 1.0787 s / img. ETA=0:24:34
+ [32m[09/06 15:21:33 d2.evaluation.evaluator]:  [0mInference done 6200/7517. 1.0787 s / img. ETA=0:23:40
+ [32m[09/06 15:22:27 d2.evaluation.evaluator]:  [0mInference done 6250/7517. 1.0787 s / img. ETA=0:22:46
+ [32m[09/06 15:23:20 d2.evaluation.evaluator]:  [0mInference done 6300/7517. 1.0785 s / img. ETA=0:21:52
+ [32m[09/06 15:24:16 d2.evaluation.evaluator]:  [0mInference done 6350/7517. 1.0788 s / img. ETA=0:20:58
+ [32m[09/06 15:25:10 d2.evaluation.evaluator]:  [0mInference done 6400/7517. 1.0788 s / img. ETA=0:20:05
+ [32m[09/06 15:26:03 d2.evaluation.evaluator]:  [0mInference done 6450/7517. 1.0787 s / img. ETA=0:19:10
+ [32m[09/06 15:26:58 d2.evaluation.evaluator]:  [0mInference done 6500/7517. 1.0789 s / img. ETA=0:18:17
+ [32m[09/06 15:27:53 d2.evaluation.evaluator]:  [0mInference done 6550/7517. 1.0790 s / img. ETA=0:17:23
+ [32m[09/06 15:28:43 d2.evaluation.evaluator]:  [0mInference done 6600/7517. 1.0784 s / img. ETA=0:16:28
+ [32m[09/06 15:29:36 d2.evaluation.evaluator]:  [0mInference done 6650/7517. 1.0783 s / img. ETA=0:15:34
+ [32m[09/06 15:30:35 d2.evaluation.evaluator]:  [0mInference done 6700/7517. 1.0790 s / img. ETA=0:14:41
+ [32m[09/06 15:31:28 d2.evaluation.evaluator]:  [0mInference done 6750/7517. 1.0790 s / img. ETA=0:13:47
+ [32m[09/06 15:32:23 d2.evaluation.evaluator]:  [0mInference done 6800/7517. 1.0791 s / img. ETA=0:12:53
+ [32m[09/06 15:33:15 d2.evaluation.evaluator]:  [0mInference done 6850/7517. 1.0788 s / img. ETA=0:11:59
+ [32m[09/06 15:34:10 d2.evaluation.evaluator]:  [0mInference done 6900/7517. 1.0789 s / img. ETA=0:11:05
+ [32m[09/06 15:35:09 d2.evaluation.evaluator]:  [0mInference done 6950/7517. 1.0797 s / img. ETA=0:10:12
+ [32m[09/06 15:36:05 d2.evaluation.evaluator]:  [0mInference done 7000/7517. 1.0800 s / img. ETA=0:09:18
+ [32m[09/06 15:37:02 d2.evaluation.evaluator]:  [0mInference done 7050/7517. 1.0804 s / img. ETA=0:08:24
+ [32m[09/06 15:38:02 d2.evaluation.evaluator]:  [0mInference done 7100/7517. 1.0812 s / img. ETA=0:07:30
+ [32m[09/06 15:38:58 d2.evaluation.evaluator]:  [0mInference done 7150/7517. 1.0816 s / img. ETA=0:06:36
+ [32m[09/06 15:39:53 d2.evaluation.evaluator]:  [0mInference done 7200/7517. 1.0817 s / img. ETA=0:05:42
+ [32m[09/06 15:40:47 d2.evaluation.evaluator]:  [0mInference done 7250/7517. 1.0816 s / img. ETA=0:04:48
+ [32m[09/06 15:41:42 d2.evaluation.evaluator]:  [0mInference done 7300/7517. 1.0817 s / img. ETA=0:03:54
+ [32m[09/06 15:42:29 d2.evaluation.evaluator]:  [0mInference done 7350/7517. 1.0808 s / img. ETA=0:03:00
+ [32m[09/06 15:43:25 d2.evaluation.evaluator]:  [0mInference done 7400/7517. 1.0810 s / img. ETA=0:02:06
+ [32m[09/06 15:44:23 d2.evaluation.evaluator]:  [0mInference done 7450/7517. 1.0816 s / img. ETA=0:01:12
+ [32m[09/06 15:45:23 d2.evaluation.evaluator]:  [0mInference done 7500/7517. 1.0824 s / img. ETA=0:00:18
+ [32m[09/06 15:45:44 d2.evaluation.evaluator]:  [0mTotal inference time: 2:15:33 (1.082668 s / img per device, on 1 devices)
+ [32m[09/06 15:45:44 d2.evaluation.evaluator]:  [0mTotal inference pure compute time: 0:39:31 (0.315760 s / img per device, on 1 devices)
+ [32m[09/06 15:46:27 d2.evaluation.amodal_visible_evaluation]:  [0mPreparing results for COCO format ...
+ [32m[09/06 15:46:28 d2.evaluation.amodal_visible_evaluation]:  [0mSaving results to output/NoModel/mask_rcnn_parallel_CtRef_SPRef_SPRet_FM_KINS_res50_SGD_1x/inference/coco_instances_amodal_results.json
+ [32m[09/06 15:46:34 d2.evaluation.amodal_visible_evaluation]:  [0mSaving results to output/NoModel/mask_rcnn_parallel_CtRef_SPRef_SPRet_FM_KINS_res50_SGD_1x/inference/coco_instances_visible_results.json
+ [32m[09/06 15:46:41 d2.evaluation.amodal_visible_evaluation]:  [0mSaving results to output/NoModel/mask_rcnn_parallel_CtRef_SPRef_SPRet_FM_KINS_res50_SGD_1x/inference/coco_instances_amodal2_results.json
+ [32m[09/06 15:46:47 d2.evaluation.amodal_visible_evaluation]:  [0mSaving results to output/NoModel/mask_rcnn_parallel_CtRef_SPRef_SPRet_FM_KINS_res50_SGD_1x/inference/coco_instances_visible2_results.json
+ [32m[09/06 15:46:54 d2.evaluation.amodal_visible_evaluation]:  [0mSaving results to output/NoModel/mask_rcnn_parallel_CtRef_SPRef_SPRet_FM_KINS_res50_SGD_1x/inference/coco_instances_amodal_ensemble_results.json
+ [32m[09/06 15:47:00 d2.evaluation.amodal_visible_evaluation]:  [0mSaving results to output/NoModel/mask_rcnn_parallel_CtRef_SPRef_SPRet_FM_KINS_res50_SGD_1x/inference/coco_instances_visible_ensemble_results.json
+ [32m[09/06 15:47:06 d2.evaluation.amodal_visible_evaluation]:  [0mnumber of small occlusion instances in prediction:134365
+ [32m[09/06 15:47:06 d2.evaluation.amodal_visible_evaluation]:  [0mnumber of medium occlusion instances in prediction:54987
+ [32m[09/06 15:47:06 d2.evaluation.amodal_visible_evaluation]:  [0mnumber of heavy occlusion instances in prediction:51936
+ [32m[09/06 15:47:20 d2.evaluation.amodal_visible_evaluation]:  [0mEvaluating predictions ...
+ [32m[09/06 15:47:20 d2.evaluation.amodal_visible_evaluation]:  [0mEvaluation task_name : amodal2_segm
+Loading and preparing results...
+DONE (t=3.25s)
+creating index...
+index created!
+Running per image evaluation...
+Evaluate annotation type *segm*
+DONE (t=111.35s).
+Accumulating evaluation results...
+DONE (t=8.52s).
+ Average Precision  (AP) @[ IoU=0.50:0.95 | area=   all | maxDets=100 ] = 0.132
+ Average Precision  (AP) @[ IoU=0.50      | area=   all | maxDets=100 ] = 0.280
+ Average Precision  (AP) @[ IoU=0.75      | area=   all | maxDets=100 ] = 0.102
+ Average Precision  (AP) @[ IoU=0.50:0.95 | area= small | maxDets=100 ] = 0.182
+ Average Precision  (AP) @[ IoU=0.50:0.95 | area=medium | maxDets=100 ] = 0.179
+ Average Precision  (AP) @[ IoU=0.50:0.95 | area= large | maxDets=100 ] = 0.145
+ Average Recall     (AR) @[ IoU=0.50:0.95 | area=   all | maxDets=  1 ] = 0.105
+ Average Recall     (AR) @[ IoU=0.50:0.95 | area=   all | maxDets= 10 ] = 0.251
+ Average Recall     (AR) @[ IoU=0.50:0.95 | area=   all | maxDets=100 ] = 0.279
+ Average Recall     (AR) @[ IoU=0.50:0.95 | area= small | maxDets=100 ] = 0.276
+ Average Recall     (AR) @[ IoU=0.50:0.95 | area=medium | maxDets=100 ] = 0.251
+ Average Recall     (AR) @[ IoU=0.50:0.95 | area= large | maxDets=100 ] = 0.200
+ [32m[09/06 15:49:38 d2.evaluation.amodal_visible_evaluation]:  [0mEvaluation results for segm:
+|   AP   |  AP50  |  AP75  |  APs   |  APm   |  APl   |  AR1   |  AR10  |  AR100  |
+|:------:|:------:|:------:|:------:|:------:|:------:|:------:|:------:|:-------:|
+| 13.192 | 28.023 | 10.197 | 18.207 | 17.855 | 14.477 | 10.504 | 25.097 | 27.857  |
+ [32m[09/06 15:49:38 d2.evaluation.amodal_visible_evaluation]:  [0mPer-category segm AP:
+| category   | AP     | category   | AP    | category   | AP     |
+|:-----------|:-------|:-----------|:------|:-----------|:-------|
+| cyclist    | 10.505 | pedestrian | 8.398 | car        | 35.732 |
+| tram       | 1.355  | truck      | 1.230 | van        | 11.227 |
+| misc       | 23.898 |            |       |            |        |
+ [32m[09/06 15:49:38 d2.evaluation.amodal_visible_evaluation]:  [0mEvaluation task_name : amodal_ensemble_segm
+Loading and preparing results...
+DONE (t=3.45s)
+creating index...
+index created!
+Running per image evaluation...
+Evaluate annotation type *segm*
+DONE (t=108.63s).
+Accumulating evaluation results...
+DONE (t=8.16s).
+ Average Precision  (AP) @[ IoU=0.50:0.95 | area=   all | maxDets=100 ] = 0.134
+ Average Precision  (AP) @[ IoU=0.50      | area=   all | maxDets=100 ] = 0.282
+ Average Precision  (AP) @[ IoU=0.75      | area=   all | maxDets=100 ] = 0.105
+ Average Precision  (AP) @[ IoU=0.50:0.95 | area= small | maxDets=100 ] = 0.280
+ Average Precision  (AP) @[ IoU=0.50:0.95 | area=medium | maxDets=100 ] = 0.256
+ Average Precision  (AP) @[ IoU=0.50:0.95 | area= large | maxDets=100 ] = 0.204
+ Average Recall     (AR) @[ IoU=0.50:0.95 | area=   all | maxDets=  1 ] = 0.106
+ Average Recall     (AR) @[ IoU=0.50:0.95 | area=   all | maxDets= 10 ] = 0.253
+ Average Recall     (AR) @[ IoU=0.50:0.95 | area=   all | maxDets=100 ] = 0.281
+ Average Recall     (AR) @[ IoU=0.50:0.95 | area= small | maxDets=100 ] = 0.278
+ Average Recall     (AR) @[ IoU=0.50:0.95 | area=medium | maxDets=100 ] = 0.254
+ Average Recall     (AR) @[ IoU=0.50:0.95 | area= large | maxDets=100 ] = 0.202
+ [32m[09/06 15:51:54 d2.evaluation.amodal_visible_evaluation]:  [0mEvaluation results for segm:
+|   AP   |  AP50  |  AP75  |  APs   |  APm   |  APl   |  AR1   |  AR10  |  AR100  |
+|:------:|:------:|:------:|:------:|:------:|:------:|:------:|:------:|:-------:|
+| 13.355 | 28.243 | 10.483 | 27.992 | 25.573 | 20.382 | 10.600 | 25.329 | 28.108  |
+ [32m[09/06 15:51:54 d2.evaluation.amodal_visible_evaluation]:  [0mPer-category segm AP:
+| category   | AP     | category   | AP    | category   | AP     |
+|:-----------|:-------|:-----------|:------|:-----------|:-------|
+| cyclist    | 10.721 | pedestrian | 8.636 | car        | 35.715 |
+| tram       | 1.363  | truck      | 1.322 | van        | 11.333 |
+| misc       | 24.396 |            |       |            |        |
+ [32m[09/06 15:51:54 d2.evaluation.amodal_visible_evaluation]:  [0mEvaluation task_name : amodal_segm
+Loading and preparing results...
+DONE (t=3.58s)
+creating index...
+index created!
+Running per image evaluation...
+Evaluate annotation type *segm*
+DONE (t=108.54s).
+Accumulating evaluation results...
+DONE (t=8.43s).
+ Average Precision  (AP) @[ IoU=0.50:0.95 | area=   all | maxDets=100 ] = 0.127
+ Average Precision  (AP) @[ IoU=0.50      | area=   all | maxDets=100 ] = 0.279
+ Average Precision  (AP) @[ IoU=0.75      | area=   all | maxDets=100 ] = 0.091
+ Average Precision  (AP) @[ IoU=0.50:0.95 | area= small | maxDets=100 ] = 0.207
+ Average Precision  (AP) @[ IoU=0.50:0.95 | area=medium | maxDets=100 ] = 0.200
+ Average Precision  (AP) @[ IoU=0.50:0.95 | area= large | maxDets=100 ] = 0.162
+ Average Recall     (AR) @[ IoU=0.50:0.95 | area=   all | maxDets=  1 ] = 0.103
+ Average Recall     (AR) @[ IoU=0.50:0.95 | area=   all | maxDets= 10 ] = 0.243
+ Average Recall     (AR) @[ IoU=0.50:0.95 | area=   all | maxDets=100 ] = 0.270
+ Average Recall     (AR) @[ IoU=0.50:0.95 | area= small | maxDets=100 ] = 0.267
+ Average Recall     (AR) @[ IoU=0.50:0.95 | area=medium | maxDets=100 ] = 0.241
+ Average Recall     (AR) @[ IoU=0.50:0.95 | area= large | maxDets=100 ] = 0.191
+ [32m[09/06 15:54:11 d2.evaluation.amodal_visible_evaluation]:  [0mEvaluation results for segm:
+|   AP   |  AP50  |  AP75  |  APs   |  APm   |  APl   |  AR1   |  AR10  |  AR100  |
+|:------:|:------:|:------:|:------:|:------:|:------:|:------:|:------:|:-------:|
+| 12.685 | 27.880 | 9.136  | 20.702 | 19.970 | 16.220 | 10.253 | 24.349 | 26.993  |
+ [32m[09/06 15:54:11 d2.evaluation.amodal_visible_evaluation]:  [0mPer-category segm AP:
+| category   | AP     | category   | AP    | category   | AP     |
+|:-----------|:-------|:-----------|:------|:-----------|:-------|
+| cyclist    | 10.006 | pedestrian | 7.983 | car        | 34.700 |
+| tram       | 1.340  | truck      | 1.286 | van        | 10.882 |
+| misc       | 22.599 |            |       |            |        |
+ [32m[09/06 15:54:11 d2.evaluation.amodal_visible_evaluation]:  [0mEvaluation task_name : bbox
+Loading and preparing results...
+DONE (t=0.28s)
+creating index...
+index created!
+Running per image evaluation...
+Evaluate annotation type *bbox*
+DONE (t=105.64s).
+Accumulating evaluation results...
+DONE (t=8.22s).
+ Average Precision  (AP) @[ IoU=0.50:0.95 | area=   all | maxDets=100 ] = 0.148
+ Average Precision  (AP) @[ IoU=0.50      | area=   all | maxDets=100 ] = 0.289
+ Average Precision  (AP) @[ IoU=0.75      | area=   all | maxDets=100 ] = 0.129
+ Average Precision  (AP) @[ IoU=0.50:0.95 | area= small | maxDets=100 ] = 0.229
+ Average Precision  (AP) @[ IoU=0.50:0.95 | area=medium | maxDets=100 ] = 0.228
+ Average Precision  (AP) @[ IoU=0.50:0.95 | area= large | maxDets=100 ] = 0.202
+ Average Recall     (AR) @[ IoU=0.50:0.95 | area=   all | maxDets=  1 ] = 0.103
+ Average Recall     (AR) @[ IoU=0.50:0.95 | area=   all | maxDets= 10 ] = 0.262
+ Average Recall     (AR) @[ IoU=0.50:0.95 | area=   all | maxDets=100 ] = 0.294
+ Average Recall     (AR) @[ IoU=0.50:0.95 | area= small | maxDets=100 ] = 0.292
+ Average Recall     (AR) @[ IoU=0.50:0.95 | area=medium | maxDets=100 ] = 0.272
+ Average Recall     (AR) @[ IoU=0.50:0.95 | area= large | maxDets=100 ] = 0.233
+ [32m[09/06 15:56:07 d2.evaluation.amodal_visible_evaluation]:  [0mEvaluation results for bbox:
+|   AP   |  AP50  |  AP75  |  APs   |  APm   |  APl   |
+|:------:|:------:|:------:|:------:|:------:|:------:|
+| 14.769 | 28.891 | 12.895 | 22.876 | 22.798 | 20.228 |
+ [32m[09/06 15:56:07 d2.evaluation.amodal_visible_evaluation]:  [0mPer-category bbox AP:
+| category   | AP     | category   | AP     | category   | AP     |
+|:-----------|:-------|:-----------|:-------|:-----------|:-------|
+| cyclist    | 10.530 | pedestrian | 10.157 | car        | 35.088 |
+| tram       | 1.132  | truck      | 1.127  | van        | 10.306 |
+| misc       | 35.045 |            |        |            |        |
+ [32m[09/06 15:56:07 d2.evaluation.amodal_visible_evaluation]:  [0mEvaluation task_name : visible2_segm
+Loading and preparing results...
+DONE (t=3.48s)
+creating index...
+index created!
+Running per image evaluation...
+Evaluate annotation type *segm*
+Accumulating evaluation results...
+DONE (t=8.39s).
+ Average Precision  (AP) @[ IoU=0.50:0.95 | area=   all | maxDets=100 ] = 0.104
+ Average Precision  (AP) @[ IoU=0.50      | area=   all | maxDets=100 ] = 0.240
+ Average Precision  (AP) @[ IoU=0.75      | area=   all | maxDets=100 ] = 0.077
+ Average Precision  (AP) @[ IoU=0.50:0.95 | area= small | maxDets=100 ] = 0.146
+ Average Precision  (AP) @[ IoU=0.50:0.95 | area=medium | maxDets=100 ] = 0.134
+ Average Precision  (AP) @[ IoU=0.50:0.95 | area= large | maxDets=100 ] = 0.091
+ Average Recall     (AR) @[ IoU=0.50:0.95 | area=   all | maxDets=  1 ] = 0.096
+ Average Recall     (AR) @[ IoU=0.50:0.95 | area=   all | maxDets= 10 ] = 0.217
+ Average Recall     (AR) @[ IoU=0.50:0.95 | area=   all | maxDets=100 ] = 0.236
+ Average Recall     (AR) @[ IoU=0.50:0.95 | area= small | maxDets=100 ] = 0.230
+ Average Recall     (AR) @[ IoU=0.50:0.95 | area=medium | maxDets=100 ] = 0.194
+ Average Recall     (AR) @[ IoU=0.50:0.95 | area= large | maxDets=100 ] = 0.129
+ [32m[09/06 15:58:24 d2.evaluation.amodal_visible_evaluation]:  [0mEvaluation results for segm:
+|   AP   |  AP50  |  AP75  |  APs   |  APm   |  APl  |  AR1  |  AR10  |  AR100  |
+|:------:|:------:|:------:|:------:|:------:|:-----:|:-----:|:------:|:-------:|
+| 10.434 | 24.018 | 7.689  | 14.607 | 13.449 | 9.074 | 9.645 | 21.743 | 23.622  |
+ [32m[09/06 15:58:24 d2.evaluation.amodal_visible_evaluation]:  [0mPer-category segm AP:
+| category   | AP     | category   | AP    | category   | AP     |
+|:-----------|:-------|:-----------|:------|:-----------|:-------|
+| cyclist    | 9.871  | pedestrian | 6.895 | car        | 28.958 |
+| tram       | 1.162  | truck      | 1.190 | van        | 8.444  |
+| misc       | 16.517 |            |       |            |        |
+ [32m[09/06 15:58:24 d2.evaluation.amodal_visible_evaluation]:  [0mEvaluation task_name : visible_ensemble_segm
+Loading and preparing results...
+DONE (t=3.49s)
+creating index...
+index created!
+Running per image evaluation...
+Evaluate annotation type *segm*
+DONE (t=115.06s).
+Accumulating evaluation results...
+DONE (t=8.12s).
+ Average Precision  (AP) @[ IoU=0.50:0.95 | area=   all | maxDets=100 ] = 0.105
+ Average Precision  (AP) @[ IoU=0.50      | area=   all | maxDets=100 ] = 0.240
+ Average Precision  (AP) @[ IoU=0.75      | area=   all | maxDets=100 ] = 0.080
+ Average Precision  (AP) @[ IoU=0.50:0.95 | area= small | maxDets=100 ] = 0.236
+ Average Precision  (AP) @[ IoU=0.50:0.95 | area=medium | maxDets=100 ] = 0.197
+ Average Precision  (AP) @[ IoU=0.50:0.95 | area= large | maxDets=100 ] = 0.129
+ Average Recall     (AR) @[ IoU=0.50:0.95 | area=   all | maxDets=  1 ] = 0.099
+ Average Recall     (AR) @[ IoU=0.50:0.95 | area=   all | maxDets= 10 ] = 0.221
+ Average Recall     (AR) @[ IoU=0.50:0.95 | area=   all | maxDets=100 ] = 0.240
+ Average Recall     (AR) @[ IoU=0.50:0.95 | area= small | maxDets=100 ] = 0.233
+ Average Recall     (AR) @[ IoU=0.50:0.95 | area=medium | maxDets=100 ] = 0.196
+ Average Recall     (AR) @[ IoU=0.50:0.95 | area= large | maxDets=100 ] = 0.126
+ [32m[09/06 16:00:42 d2.evaluation.amodal_visible_evaluation]:  [0mEvaluation results for segm:
+|   AP   |  AP50  |  AP75  |  APs   |  APm   |  APl   |  AR1  |  AR10  |  AR100  |
+|:------:|:------:|:------:|:------:|:------:|:------:|:-----:|:------:|:-------:|
+| 10.538 | 24.047 | 8.041  | 23.579 | 19.745 | 12.900 | 9.851 | 22.095 | 23.980  |
+ [32m[09/06 16:00:42 d2.evaluation.amodal_visible_evaluation]:  [0mPer-category segm AP:
+| category   | AP     | category   | AP    | category   | AP     |
+|:-----------|:-------|:-----------|:------|:-----------|:-------|
+| cyclist    | 10.494 | pedestrian | 7.460 | car        | 28.329 |
+| tram       | 1.137  | truck      | 1.260 | van        | 8.491  |
+| misc       | 16.592 |            |       |            |        |
+ [32m[09/06 16:00:42 d2.evaluation.amodal_visible_evaluation]:  [0mEvaluation task_name : visible_segm
+Loading and preparing results...
+DONE (t=3.68s)
+creating index...
+index created!
+Running per image evaluation...
+Evaluate annotation type *segm*
+DONE (t=109.55s).
+Accumulating evaluation results...
+DONE (t=8.36s).
+ Average Precision  (AP) @[ IoU=0.50:0.95 | area=   all | maxDets=100 ] = 0.100
+ Average Precision  (AP) @[ IoU=0.50      | area=   all | maxDets=100 ] = 0.233
+ Average Precision  (AP) @[ IoU=0.75      | area=   all | maxDets=100 ] = 0.072
+ Average Precision  (AP) @[ IoU=0.50:0.95 | area= small | maxDets=100 ] = 0.170
+ Average Precision  (AP) @[ IoU=0.50:0.95 | area=medium | maxDets=100 ] = 0.151
+ Average Precision  (AP) @[ IoU=0.50:0.95 | area= large | maxDets=100 ] = 0.098
+ Average Recall     (AR) @[ IoU=0.50:0.95 | area=   all | maxDets=  1 ] = 0.097
+ Average Recall     (AR) @[ IoU=0.50:0.95 | area=   all | maxDets= 10 ] = 0.214
+ Average Recall     (AR) @[ IoU=0.50:0.95 | area=   all | maxDets=100 ] = 0.232
+ Average Recall     (AR) @[ IoU=0.50:0.95 | area= small | maxDets=100 ] = 0.225
+ Average Recall     (AR) @[ IoU=0.50:0.95 | area=medium | maxDets=100 ] = 0.187
+ Average Recall     (AR) @[ IoU=0.50:0.95 | area= large | maxDets=100 ] = 0.118
+ [32m[09/06 16:02:55 d2.evaluation.amodal_visible_e˙valuation]:  [0mEvaluation results for segm:
+|   AP   |  AP50  |  AP75  |  APs   |  APm   |  APl  |  AR1  |  AR10  |  AR100  |
+|:------:|:------:|:------:|:------:|:------:|:-----:|:-----:|:------:|:-------:|
+| 10.006 | 23.260 | 7.186  | 16.969 | 15.135 | 9.796 | 9.704 | 21.415 | 23.183  |
+ [32m[09/06 16:02:55 d2.evaluation.amodal_visible_evaluation]:  [0mPer-category segm AP:
+| category   | AP     | category   | AP    | category   | AP     |
+|:-----------|:-------|:-----------|:------|:-----------|:-------|
+| cyclist    | 10.187 | pedestrian | 6.852 | car        | 27.748 |
+| tram       | 1.129  | truck      | 1.256 | van        | 8.379  |
+| misc       | 14.494 |            |       |            |        |
+ [32m[09/06 16:02:56 d2.engine.defaults]:  [0mEvaluation results for kins_val in csv format:
+ [32m[09/06 16:02:56 d2.evaluation.testing]:  [0mcopypaste: Task: amodal2_segm
+ [32m[09/06 16:02:56 d2.evaluation.testing]:  [0mcopypaste: AP,AP50,AP75,APs,APm,APl,AR1,AR10,AR100
+ [32m[09/06 16:02:56 d2.evaluation.testing]:  [0mcopypaste: 13.1921,28.0228,10.1965,18.2069,17.8551,14.4774,10.5045,25.0975,27.8572
+ [32m[09/06 16:02:56 d2.evaluation.testing]:  [0mcopypaste: Task: amodal_ensemble_segm
+ [32m[09/06 16:02:56 d2.evaluation.testing]:  [0mcopypaste: AP,AP50,AP75,APs,APm,APl,AR1,AR10,AR100
+ [32m[09/06 16:02:56 d2.evaluation.testing]:  [0mcopypaste: 13.3552,28.2435,10.4828,27.9915,25.5728,20.3819,10.6001,25.3285,28.1082
+ [32m[09/06 16:02:56 d2.evaluation.testing]:  [0mcopypaste: Task: amodal_segm
+ [32m[09/06 16:02:56 d2.evaluation.testing]:  [0mcopypaste: AP,AP50,AP75,APs,APm,APl,AR1,AR10,AR100
+ [32m[09/06 16:02:56 d2.evaluation.testing]:  [0mcopypaste: 12.6852,27.8802,9.1362,20.7019,19.9699,16.2203,10.2526,24.3494,26.9930
+ [32m[09/06 16:02:56 d2.evaluation.testing]:  [0mcopypaste: Task: bbox
+ [32m[09/06 16:02:56 d2.evaluation.testing]:  [0mcopypaste: AP,AP50,AP75,APs,APm,APl
+ [32m[09/06 16:02:56 d2.evaluation.testing]:  [0mcopypaste: 14.7693,28.8911,12.8952,22.8759,22.7978,20.2275
+ [32m[09/06 16:02:56 d2.evaluation.testing]:  [0mcopypaste: Task: visible2_segm
+ [32m[09/06 16:02:56 d2.evaluation.testing]:  [0mcopypaste: AP,AP50,AP75,APs,APm,APl,AR1,AR10,AR100
+ [32m[09/06 16:02:56 d2.evaluation.testing]:  [0mcopypaste: 10.4337,24.0176,7.6889,14.6075,13.4488,9.0742,9.6452,21.7428,23.6221
+ [32m[09/06 16:02:56 d2.evaluation.testing]:  [0mcopypaste: Task: visible_ensemble_segm
+ [32m[09/06 16:02:56 d2.evaluation.testing]:  [0mcopypaste: AP,AP50,AP75,APs,APm,APl,AR1,AR10,AR100
+ [32m[09/06 16:02:56 d2.evaluation.testing]:  [0mcopypaste: 10.5378,24.0472,8.0413,23.5785,19.7454,12.8996,9.8505,22.0946,23.9797
+ [32m[09/06 16:02:56 d2.evaluation.testing]:  [0mcopypaste: Task: visible_segm
+ [32m[09/06 16:02:56 d2.evaluation.testing]:  [0mcopypaste: AP,AP50,AP75,APs,APm,APl,AR1,AR10,AR100
+ [32m[09/06 16:02:56 d2.evaluation.testing]:  [0mcopypaste: 10.0064,23.2599,7.1858,16.9686,15.1354,9.7956,9.7036,21.4152,23.1833
+(dais)  [01;32mjingchengyang4@amodal-1 [00m: [01;34m~/DAIS [00m$ ls
+README.md           cocoa_recon_net.pth   [0m [01;34mdatasets [0m     [01;34mdetectron2.egg-info [0m  kins_recon_net.pth   [01;34mresults [0m    system_amodal.py
+base                 [01;34mconfigs [0m               [01;34mdemo [0m         [01;34mdev [0m                   [01;34moutput [0m               [01;34mruns [0m        [01;34mtests [0m
+ [01;34mbuild [0m               d2sa_codebook.npy     [01;34mdepth [0m       hoglayer.py           [01;34mprojects [0m            setup.cfg   [01;34mtools [0m
+cocoa_codebook.npy  d2sa_recon_net.pth    [01;34mdetectron2 [0m  kins_codebook.npy    requirements.txt    setup.py
+(dais)  [01;32mjingchengyang4@amodal-1 [00m: [01;34m~/DAIS [00m$ cd
+(dais)  [01;32mjingchengyang4@amodal-1 [00m: [01;34m~ [00m$ ls
+Anaconda3-2022.05-Linux-x86_64.sh   [0m [01;34manaconda3 [0m                                                        random_weights_baseline_evaluation
+ [01;34mDAIS [0m                                [01;31mcuda-repo-ubuntu1810-10-1-local-10.1.105-418.39_1.0-1_amd64.deb [0m
+(dais)  [01;32mjingchengyang4@amodal-1 [00m: [01;34m~ [00m$
