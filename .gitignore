@@ -136,3 +136,5 @@ runs/
 detectron2/model_zoo/configs
 .DS_Store
 /depth/pytorch/models/
+
+models/

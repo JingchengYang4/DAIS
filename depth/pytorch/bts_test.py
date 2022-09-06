@@ -22,6 +22,7 @@ import time
 import numpy as np
 import cv2
 import sys
+import pickle
 
 import torch
 import torch.nn as nn
@@ -90,7 +91,22 @@ def test(params):
     model = torch.nn.DataParallel(model)
 
     checkpoint = torch.load(args.checkpoint_path)
+
     model.load_state_dict(checkpoint['model'])
+
+    if False:
+        weights = model.module.encoder.base_model.state_dict()
+        print(type(weights))
+
+        for k in weights.copy():
+            weights[k.replace('layer', 'backbone.bottom_up.res')] = weights.pop(k)
+
+        d = {'model': weights, '__author__': 'JingchengYang'}
+        with open('../../models/bts_res50.pkl', 'wb') as handle:
+            pickle.dump(d, handle, protocol=pickle.HIGHEST_PROTOCOL)
+        print(weights.keys())
+        quit()
+
     model.eval()
     model.cuda()
 

@@ -145,7 +145,7 @@ class FPN(Backbone):
             if False:
                 f, axarrr = plt.subplots(2, 1)
                 axarrr[0].imshow(image.cpu()[0].permute(1, 2, 0))
-                print(depth, type(depth))
+                #print(depth, type(depth))
                 axarrr[1].imshow(np.log10(depth))
                 plt.show()
             #quit()
