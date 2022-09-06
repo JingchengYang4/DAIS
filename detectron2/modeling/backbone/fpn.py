@@ -51,9 +51,9 @@ class FPN(Backbone):
         super(FPN, self).__init__()
         assert isinstance(bottom_up, Backbone)
 
+        self.extract_depth = extract_depth
         if extract_depth:
             self.dp = DepthPredictionModule()
-            self.extract_depth = True
 
         # Feature map strides and channels from the bottom up network (e.g. ResNet)
         in_strides = [bottom_up.out_feature_strides[f] for f in in_features]
