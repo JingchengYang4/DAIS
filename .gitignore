@@ -128,9 +128,9 @@ dmypy.json
 # Pyre type checker
 .pyre/
 
-datasets/
+/datasets/
 *.0
-output/
+/output/
 .idea/
 runs/
 detectron2/model_zoo/configs
