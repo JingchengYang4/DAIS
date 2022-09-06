@@ -51,7 +51,7 @@ class FPN(Backbone):
         super(FPN, self).__init__()
         assert isinstance(bottom_up, Backbone)
 
-        self.extract_depth = extract_depth
+        self.depth = extract_depth
         if extract_depth:
             self.dp = DepthPredictionModule()
 
@@ -125,7 +125,7 @@ class FPN(Backbone):
                 ["p2", "p3", ..., "p6"].
         """
 
-        if self.extract_depth:
+        if self.depth:
             #print(x.size())
             image = torch.flip(x, [1])#switches bgr to rgb
             #print(image.size())
