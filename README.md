@@ -51,6 +51,15 @@ wget https://github.com/qqlu/Amodal-Instance-Segmentation-through-KINS-Dataset/r
 wget https://github.com/qqlu/Amodal-Instance-Segmentation-through-KINS-Dataset/raw/master/instances_val.json
 ```
 
+Depth prediction models:
+
+```
+cd depth/pytorch
+mkdir models
+cd models
+wget https://cogaplex-bts.s3.ap-northeast-2.amazonaws.com/bts_eigen_v2_pytorch_densenet161.zip
+unzip bts_eigen_v2_pytorch_densenet161.zip
+```
 
 ## Training
 
