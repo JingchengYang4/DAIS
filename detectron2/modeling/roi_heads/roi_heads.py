@@ -931,8 +931,8 @@ class Parallel_Amodal_Visible_ROIHeads(ROIHeads):
 
         box_features = self.box_pooler(features, [x.proposal_boxes for x in proposals], depth_list)
 
-        print(box_features.size())
-        quit()
+        #print(box_features.size())
+        #quit()
 
         box_features = self.box_head(box_features)
         self.pred_class_logits, pred_proposal_deltas = self.box_predictor(box_features)
