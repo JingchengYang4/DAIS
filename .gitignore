@@ -133,3 +133,5 @@ datasets/
 output/
 .idea/
 runs/
+detectron2/model_zoo/configs
+.DS_Store
