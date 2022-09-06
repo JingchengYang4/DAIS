@@ -24,9 +24,7 @@ class FPN(Backbone):
     It creates pyramid features built on top of some input feature maps.
     """
 
-    def __init__(
-        self, bottom_up, in_features, out_channels, norm="", top_block=None, fuse_type="sum"
-    ):
+    def __init__(self, bottom_up, in_features, out_channels, norm="", top_block=None, fuse_type="sum", extract_depth=False):
         """
         Args:
             bottom_up (Backbone): module representing the bottom up subnetwork.
@@ -53,9 +51,9 @@ class FPN(Backbone):
         super(FPN, self).__init__()
         assert isinstance(bottom_up, Backbone)
 
-
-        #print("THERE ARE MANY OF ME")
-        self.dp = DepthPredictionModule()
+        if extract_depth:
+            self.dp = DepthPredictionModule()
+            self.extract_depth = True
 
         # Feature map strides and channels from the bottom up network (e.g. ResNet)
         in_strides = [bottom_up.out_feature_strides[f] for f in in_features]
@@ -127,7 +125,7 @@ class FPN(Backbone):
                 ["p2", "p3", ..., "p6"].
         """
 
-        if True:
+        if self.extract_depth:
             #print(x.size())
             image = torch.flip(x, [1])#switches bgr to rgb
             #print(image.size())
@@ -272,5 +270,6 @@ def build_retinanet_resnet_fpn_backbone(cfg, input_shape: ShapeSpec):
         norm=cfg.MODEL.FPN.NORM,
         top_block=LastLevelP6P7(in_channels_p6p7, out_channels),
         fuse_type=cfg.MODEL.FPN.FUSE_TYPE,
+        extract_depth=cfg.MODEL.DEPTH_FEATURE_EXTRACTION
     )
     return backbone

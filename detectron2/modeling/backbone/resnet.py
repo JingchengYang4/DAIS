@@ -417,8 +417,13 @@ def build_resnet_backbone(cfg, input_shape):
 
     #SO THIS IS WHERE ALL THE CHANNELS ARE DONE OVER OK
     norm = cfg.MODEL.RESNETS.NORM
+
+    in_channels = input_shape.channels
+    if cfg.MODEL.DEPTH_FEATURE_EXTRACTION:
+        in_channels += 1
+
     stem = BasicStem(
-        in_channels=input_shape.channels+1,
+        in_channels=in_channels,
         out_channels=cfg.MODEL.RESNETS.STEM_OUT_CHANNELS,
         norm=norm,
     )
