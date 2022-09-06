@@ -1,6 +1,7 @@
 _BASE_: "../Base-RCNN-FPN-KINS.yaml"
 MODEL:
   MASK_ON: True
+  DEPTH_FEATURE_EXTRACTION: True
   RESNETS:
     DEPTH: 50
   ROI_HEADS:
