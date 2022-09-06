@@ -24,7 +24,8 @@ class FPN(Backbone):
     It creates pyramid features built on top of some input feature maps.
     """
 
-    def __init__(self, bottom_up, in_features, out_channels, norm="", top_block=None, fuse_type="sum", extract_depth=False):
+    def __init__(self, bottom_up, in_features, out_channels, norm="", top_block=None, fuse_type="sum",
+                 extract_depth=False):
         """
         Args:
             bottom_up (Backbone): module representing the bottom up subnetwork.
@@ -51,6 +52,7 @@ class FPN(Backbone):
         super(FPN, self).__init__()
         assert isinstance(bottom_up, Backbone)
 
+        print("I EXTRACT DEPTH ", extract_depth)
         self.depth = extract_depth
         if extract_depth:
             self.dp = DepthPredictionModule()
