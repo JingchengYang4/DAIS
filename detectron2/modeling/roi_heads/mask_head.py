@@ -1,4 +1,5 @@
 # Copyright (c) Facebook, Inc. and its affiliates. All Rights Reserved
+import matplotlib.pyplot as plt
 from PIL import Image
 import copy
 import numpy as np
@@ -7,7 +8,7 @@ import torch
 from torch import nn
 from torch.nn import functional as F
 from torchvision import transforms
-
+import matplotlib.pyplot as pltS
 from .memo_functions import vq, vq_st
 from typing import List
 from detectron2.structures import Instances
@@ -389,237 +390,6 @@ class MaskRCNNConvUpsampleHead(nn.Module):
         x = F.relu(self.deconv(x))
         return self.predictor(x)
 
-
-@ROI_MASK_HEAD_REGISTRY.register()
-class Amodal_Visible_Head(nn.Module):
-    """
-    A mask head with several conv layers, plus an upsample layer (with `ConvTranspose2d`).
-    """
-
-    def __init__(self, cfg, input_shape: ShapeSpec):
-        """
-        The following attributes are parsed from config:
-            num_conv: the number of conv layers
-            conv_dim: the dimension of the conv layers
-            norm: normalization for the conv layers
-        """
-        super(Amodal_Visible_Head, self).__init__()
-
-        # fmt: off
-        self.cfg = cfg
-        num_classes       = cfg.MODEL.ROI_HEADS.NUM_CLASSES
-        conv_dims         = cfg.MODEL.ROI_MASK_HEAD.CONV_DIM
-        self.norm         = cfg.MODEL.ROI_MASK_HEAD.NORM
-        num_conv          = cfg.MODEL.ROI_MASK_HEAD.NUM_CONV
-        # num_vis_conv      = cfg.MODEL.ROI_MASK_HEAD.NUM_VIS_CONV
-        self.cycle        = cfg.MODEL.ROI_MASK_HEAD.AMODAL_CYCLE
-        self.fm = cfg.MODEL.ROI_MASK_HEAD.AMODAL_FEATURE_MATCHING
-        self.fm_beta = cfg.MODEL.ROI_MASK_HEAD.AMODAL_FM_BETA
-        self.MEMORY_REFINE = cfg.MODEL.ROI_MASK_HEAD.RECON_NET.MEMORY_REFINE
-        self.version = cfg.MODEL.ROI_MASK_HEAD.VERSION
-        input_channels    = input_shape.channels
-        cls_agnostic_mask = cfg.MODEL.ROI_MASK_HEAD.CLS_AGNOSTIC_MASK
-        # fmt: on
-
-        self.amodal_conv_norm_relus = []
-
-        for k in range(num_conv):
-            conv = Conv2d(
-                input_channels if k == 0 else conv_dims,
-                conv_dims,
-                kernel_size=3,
-                stride=1,
-                padding=1,
-                bias=not self.norm,
-                norm=get_norm(self.norm, conv_dims),
-                activation=F.relu,
-            )
-            self.add_module("amodal_mask_fcn{}".format(k + 1), conv)
-            self.amodal_conv_norm_relus.append(conv)
-
-        self.amodal_deconv = ConvTranspose2d(
-            conv_dims if num_conv > 0 else input_channels,
-            conv_dims,
-            kernel_size=2,
-            stride=2,
-            padding=0,
-        )
-
-        num_mask_classes = 1 if cls_agnostic_mask else num_classes
-        self.amodal_predictor = Conv2d(conv_dims, num_mask_classes, kernel_size=1, stride=1, padding=0)
-        for layer in self.amodal_conv_norm_relus + [self.amodal_deconv]:
-            weight_init.c2_msra_fill(layer)
-        # use normal distribution initialization for mask prediction layer
-        nn.init.normal_(self.amodal_predictor.weight, std=0.001)
-        if self.amodal_predictor.bias is not None:
-            nn.init.constant_(self.amodal_predictor.bias, 0)
-        # self.amodal_pool = nn.MaxPool2d(kernel_size=2)
-        self.amodal_pool = nn.AvgPool2d(kernel_size=2)
-        self.visible_pool = nn.AvgPool2d(kernel_size=2)
-        self.visible_conv_norm_relus = []
-
-        for k in range(num_conv):
-            conv = Conv2d(
-                input_channels if k == 0 else conv_dims,
-                conv_dims,
-                kernel_size=3,
-                stride=1,
-                padding=1,
-                bias=not self.norm,
-                norm=get_norm(self.norm, conv_dims),
-                activation=F.relu,
-            )
-            self.add_module("visible_mask_fcn{}".format(k + 1), conv)
-            self.visible_conv_norm_relus.append(conv)
-
-        self.visible_deconv = ConvTranspose2d(
-                conv_dims if num_conv > 0 else input_channels,
-                conv_dims,
-                kernel_size=2,
-                stride=2,
-                padding=0,
-            )
-
-        num_mask_classes = 1 if cls_agnostic_mask else num_classes
-        self.visible_predictor = Conv2d(conv_dims, num_mask_classes, kernel_size=1, stride=1, padding=0)
-        for layer in self.visible_conv_norm_relus + [self.visible_deconv]:
-            weight_init.c2_msra_fill(layer)
-        # use normal distribution initialization for mask prediction layer
-        nn.init.normal_(self.visible_predictor.weight, std=0.001)
-        if self.visible_predictor.bias is not None:
-            nn.init.constant_(self.visible_predictor.bias, 0)
-
-    def forward(self, x, instances):
-        input_features = x
-        output_mask_logits = []
-        if self.version == 0:
-            amodal_mask_logits, _ = self.single_head_forward(x, head="amodal")
-            amodal_attention = self.amodal_pool(classes_choose(amodal_mask_logits, instances)).unsqueeze(1)
-            visible_mask_logits, _ = self.single_head_forward(input_features * amodal_attention, head="visible")
-            output_mask_logits.append([amodal_mask_logits, visible_mask_logits])
-        elif self.version == 1:
-            visible_mask_logits, _ = self.single_head_forward(x, head="visible")
-            visible_attention = self.amodal_pool(classes_choose(visible_mask_logits, instances)).unsqueeze(1)
-            amodal_mask_logits, _ = self.single_head_forward(input_features * visible_attention, head="amodal")
-            output_mask_logits.append([amodal_mask_logits, visible_mask_logits])
-        elif self.version == 2:
-            # a2v2a2v
-            amodal_mask_logits, _ = self.single_head_forward(x, head="amodal")
-            amodal_attention = self.amodal_pool(classes_choose(amodal_mask_logits, instances)).unsqueeze(1)
-            visible_mask_logits, _ = self.single_head_forward(input_features * amodal_attention, head="visible")
-            output_mask_logits.append([amodal_mask_logits, visible_mask_logits])
-
-            visible_attention = self.visible_pool(classes_choose(visible_mask_logits, instances)).unsqueeze(1)
-            amodal_mask_logits, _ = self.single_head_forward(input_features * visible_attention, head="amodal")
-            amodal_attention = self.amodal_pool(classes_choose(amodal_mask_logits, instances)).unsqueeze(1)
-            visible_mask_logits, _ = self.single_head_forward(input_features * amodal_attention, head="visible")
-            output_mask_logits.append([amodal_mask_logits, visible_mask_logits])
-
-            mask_side_len = x.size(2)
-            amodal_attention, visible_attention = get_gt_masks(instances, mask_side_len, output_mask_logits)
-            amodal_mask_logits, _ = self.single_head_forward(input_features * visible_attention, head="amodal")
-            visible_mask_logits, _ = self.single_head_forward(input_features * amodal_attention, head="visible")
-            output_mask_logits.append([amodal_mask_logits, visible_mask_logits])
-        elif self.version == 3:
-            visible_mask_logits, _ = self.single_head_forward(x, head="visible")
-            visible_attention = self.visible_pool(classes_choose(visible_mask_logits, instances)).unsqueeze(1)
-            amodal_mask_logits, _ = self.single_head_forward(input_features * visible_attention, head="amodal")
-            output_mask_logits.append([amodal_mask_logits, visible_mask_logits])
-
-            amodal_attention = self.amodal_pool(classes_choose(amodal_mask_logits, instances)).unsqueeze(1)
-            visible_mask_logits, _ = self.single_head_forward(input_features * amodal_attention, head="visible")
-            visible_attention = self.visible_pool(classes_choose(visible_mask_logits, instances)).unsqueeze(1)
-            amodal_mask_logits, _ = self.single_head_forward(input_features * visible_attention, head="amodal")
-            output_mask_logits.append([amodal_mask_logits, visible_mask_logits])
-
-            mask_side_len = x.size(2)
-            amodal_attention, visible_attention = get_gt_masks(instances, mask_side_len, output_mask_logits)
-            amodal_mask_logits, _ = self.single_head_forward(input_features * visible_attention, head="amodal")
-            visible_mask_logits, _ = self.single_head_forward(input_features * amodal_attention, head="visible")
-            output_mask_logits.append([amodal_mask_logits, visible_mask_logits])
-
-        elif self.version == 4:
-            amodal_mask_logits, _ = self.single_head_forward(x, head="amodal")
-            visible_mask_logits, _ = self.single_head_forward(x, head="visible")
-            output_mask_logits.append([amodal_mask_logits, visible_mask_logits])
-
-            amodal_attention = self.amodal_pool(classes_choose(amodal_mask_logits, instances)).unsqueeze(1)
-            visible_attention = self.visible_pool(classes_choose(visible_mask_logits, instances)).unsqueeze(1)
-
-            amodal_mask_logits, _ = self.single_head_forward(input_features * amodal_attention, head="amodal")
-            visible_mask_logits, _ = self.single_head_forward(input_features * visible_attention, head="visible")
-            output_mask_logits.append([amodal_mask_logits, visible_mask_logits])
-
-            mask_side_len = x.size(2)
-            amodal_attention, visible_attention = get_gt_masks(instances, mask_side_len, output_mask_logits)
-            amodal_mask_logits, _ = self.single_head_forward(input_features * visible_attention, head="amodal")
-            visible_mask_logits, _ = self.single_head_forward(input_features * amodal_attention, head="visible")
-            output_mask_logits.append([amodal_mask_logits, visible_mask_logits])
-
-        return output_mask_logits, []
-
-    def single_head_forward(self, x, head="amodal"):
-        features = []
-        i = 0
-        if head == "amodal":
-            for layer in self.amodal_conv_norm_relus:
-                x = layer(x)
-                if i in self.fm:
-                    features.append(x)
-                i += 1
-            x = F.relu(self.amodal_deconv(x), inplace=True)
-            if i in self.fm:
-                features.append(x)
-            mask_logits = self.amodal_predictor(x)
-
-        elif head == "visible":
-            for layer in self.visible_conv_norm_relus:
-                x = layer(x)
-                if i in self.fm:
-                    features.append(x)
-                i += 1
-            x = F.relu(self.visible_deconv(x), inplace=True)
-            if i in self.fm:
-                features.append(x)
-            mask_logits = self.visible_predictor(x)
-        else:
-            raise ValueError("Do not have this head")
-
-        return mask_logits, features
-
-    def _forward(self, x, instances):
-        masks_logits1, feature_maps = self.forward_through(x, instances)
-
-        if self.cycle:
-            pred_logits1 = (classes_choose(masks_logits1[0], instances), classes_choose(masks_logits1[1], instances))
-            x = x * (self.visible_pool(pred_logits1[1]) > 0).unsqueeze(1)
-            masks_logits2, feature_maps2 = self.forward_through(x, instances)
-            return (masks_logits1[0], masks_logits1[1], masks_logits2[0], masks_logits2[1]),\
-                   (feature_maps, feature_maps2)
-        else:
-            return masks_logits1, []
-
-    def _forward_through(self, x, instances):
-        input_features = x
-        feature_maps = []
-        for layer in self.amodal_conv_norm_relus:
-            x = layer(x)
-            feature_maps.append(x)
-        x = F.relu(self.amodal_deconv(x), inplace=True)
-        # x = F.relu(x)
-        amodal_mask_logits = self.amodal_predictor(x)
-
-        amodal_attention = self.amodal_pool(classes_choose(amodal_mask_logits, instances))
-
-        x = (amodal_attention > 0.0).unsqueeze(1) * input_features
-
-        for layer in self.visible_conv_norm_relus:
-            x = layer(x)
-        x = F.relu(self.visible_deconv(x), inplace=True)
-        visible_mask_logits = self.visible_predictor(x)
-        return (amodal_mask_logits, visible_mask_logits), [feature_maps[i] for i in self.fm]
-
-
 @ROI_MASK_HEAD_REGISTRY.register()
 class Parallel_Amodal_Visible_Head(nn.Module):
     """
@@ -741,112 +511,54 @@ class Parallel_Amodal_Visible_Head(nn.Module):
         #print("MY CURRENT VERSION IS ", self.version)
         #We can confirm that spref is enabled as the config contains such said code
         #Version is 3 for that config
+        #I HAVE REMOVED ALL OTHER VERSIONS
 
+        amodal_attention = (self.amodal_pool(classes_choose(masks_logits[0], instances)).unsqueeze(1) > 0).float() \
+            if self.attention_mode == "mask" else self.amodal_pool(classes_choose(masks_logits[0], instances)).unsqueeze(1).sigmoid()
 
-        if self.version == 1:
-            amodal_attention = self.amodal_pool(classes_choose(masks_logits[0], instances)).unsqueeze(1).sigmoid()
+        visible_masks_logits_, visible_feature_maps_ = self.single_head_forward(x * amodal_attention, "visible")
+        visible_attention = (self.visible_pool(classes_choose(visible_masks_logits_, instances)).unsqueeze(1) > 0).float() \
+            if self.attention_mode == "mask" else self.visible_pool(classes_choose(visible_masks_logits_, instances)).unsqueeze(1).sigmoid()
 
-            visible_masks_logits_, visible_feature_maps_ = self.single_head_forward(x * amodal_attention, "visible")
-
-            if self.SPRef:
-                pred_amodal_masks = classes_choose(masks_logits[0], instances).unsqueeze(1)
-                nn_latent_vectors = self.recon_net.encode(pred_amodal_masks).view(pred_amodal_masks.size(0), -1)
-
-                if instances[0].has("gt_classes"):
-                    shape_prior = self.recon_net.nearest_decode(nn_latent_vectors,
-                                                                cat([i.gt_classes for i in instances], dim=0),
-                                                                k=self.SPk).detach()
-                else:
-                    shape_prior = self.recon_net.nearest_decode(nn_latent_vectors,
-                                                                cat([i.pred_classes for i in instances], dim=0),
-                                                                k=self.SPk).detach()
-                shape_prior = F.avg_pool2d(shape_prior, 2)
-                amodal_masks_logits_, amodal_feature_maps_ = self.single_head_forward(
-                    self.fuse_layer(cat([x, shape_prior], dim=1)), "amodal")
+        if self.SPRef:
+            pred_amodal_masks = classes_choose(masks_logits[0], instances).unsqueeze(1)
+            nn_latent_vectors = self.recon_net.encode(pred_amodal_masks).view(pred_amodal_masks.size(0), -1)
+            if instances[0].has("gt_classes"):
+                shape_prior = self.recon_net.nearest_decode(nn_latent_vectors,
+                                                            cat([i.gt_classes for i in instances], dim=0),
+                                                            k=self.SPk).detach()
             else:
-                amodal_masks_logits_, amodal_feature_maps_ = self.single_head_forward(x, "amodal")
-
-            output_mask_logits.append([amodal_masks_logits_, visible_masks_logits_])
-
-            if instances[0].has("gt_masks"):
-                mask_side_len = x.size(2)
-                amodal_attention, _ = get_gt_masks(instances, mask_side_len, masks_logits)
-
-                visible_masks_logits_, visible_feature_maps_ = self.single_head_forward(x * amodal_attention, "visible")
-
-                output_mask_logits.append([visible_masks_logits_])
-
-                output_feature.append(visible_feature_maps_)
-
-        elif self.version == 2:
-            # amodal_attention = self.amodal_pool(classes_choose(masks_logits[0], instances)).unsqueeze(1).sigmoid()
-
-            visible_attention = self.visible_pool(classes_choose(masks_logits[1], instances)).unsqueeze(1).sigmoid()
-
-            visible_masks_logits_, visible_feature_maps_ = self.single_head_forward(x * visible_attention, "visible")
-            visible_attention = self.visible_pool(classes_choose(visible_masks_logits_, instances)).unsqueeze(1).sigmoid()
-
+                shape_prior = self.recon_net.nearest_decode(nn_latent_vectors,
+                                                            cat([i.pred_classes for i in instances], dim=0),
+                                                            k=self.SPk).detach()
+            shape_prior = F.avg_pool2d(shape_prior, 2)
+            amodal_masks_logits_, amodal_feature_maps_ = self.single_head_forward(
+                self.fuse_layer(cat([x * visible_attention, shape_prior], dim=1)), "amodal")
+        else:
             amodal_masks_logits_, amodal_feature_maps_ = self.single_head_forward(x * visible_attention, "amodal")
 
-            output_mask_logits.append([amodal_masks_logits_, visible_masks_logits_])
+        output_mask_logits.append([amodal_masks_logits_, visible_masks_logits_])
 
-            if instances[0].has("gt_masks"):
-                mask_side_len = x.size(2)
-                _, visible_attention = get_gt_masks(instances, mask_side_len, masks_logits)
-
-                amodal_masks_logits_, amodal_feature_maps_ = self.single_head_forward(x * visible_attention, "amodal")
-                visible_masks_logits_, visible_feature_maps_ = self.single_head_forward(x * visible_attention, "visible")
-
-                output_mask_logits.append([amodal_masks_logits_, visible_masks_logits_])
-
-                output_feature.append(amodal_feature_maps_ + visible_feature_maps_)
-
-        elif self.version == 3:
-            amodal_attention = (self.amodal_pool(classes_choose(masks_logits[0], instances)).unsqueeze(1) > 0).float() \
-                if self.attention_mode == "mask" else self.amodal_pool(classes_choose(masks_logits[0], instances)).unsqueeze(1).sigmoid()
-
-            visible_masks_logits_, visible_feature_maps_ = self.single_head_forward(x * amodal_attention, "visible")
-            visible_attention = (self.visible_pool(classes_choose(visible_masks_logits_, instances)).unsqueeze(1) > 0).float() \
-                if self.attention_mode == "mask" else self.visible_pool(classes_choose(visible_masks_logits_, instances)).unsqueeze(1).sigmoid()
+        if instances[0].has("gt_masks"):
+            mask_side_len = x.size(2)
+            amodal_attention, visible_attention = get_gt_masks(instances, mask_side_len, masks_logits)
 
             if self.SPRef:
-                pred_amodal_masks = classes_choose(masks_logits[0], instances).unsqueeze(1)
-                nn_latent_vectors = self.recon_net.encode(pred_amodal_masks).view(pred_amodal_masks.size(0), -1)
-                if instances[0].has("gt_classes"):
-                    shape_prior = self.recon_net.nearest_decode(nn_latent_vectors,
-                                                                cat([i.gt_classes for i in instances], dim=0),
-                                                                k=self.SPk).detach()
-                else:
-                    shape_prior = self.recon_net.nearest_decode(nn_latent_vectors,
-                                                                cat([i.pred_classes for i in instances], dim=0),
-                                                                k=self.SPk).detach()
-                shape_prior = F.avg_pool2d(shape_prior, 2)
                 amodal_masks_logits_, amodal_feature_maps_ = self.single_head_forward(
                     self.fuse_layer(cat([x * visible_attention, shape_prior], dim=1)), "amodal")
             else:
                 amodal_masks_logits_, amodal_feature_maps_ = self.single_head_forward(x * visible_attention, "amodal")
+            visible_masks_logits_, visible_feature_maps_ = self.single_head_forward(x * amodal_attention, "visible")
 
             output_mask_logits.append([amodal_masks_logits_, visible_masks_logits_])
 
-            if instances[0].has("gt_masks"):
-                mask_side_len = x.size(2)
-                amodal_attention, visible_attention = get_gt_masks(instances, mask_side_len, masks_logits)
-
-                if self.SPRef:
-                    amodal_masks_logits_, amodal_feature_maps_ = self.single_head_forward(
-                        self.fuse_layer(cat([x * visible_attention, shape_prior], dim=1)), "amodal")
-                else:
-                    amodal_masks_logits_, amodal_feature_maps_ = self.single_head_forward(x * visible_attention, "amodal")
-                visible_masks_logits_, visible_feature_maps_ = self.single_head_forward(x * amodal_attention, "visible")
-
-                output_mask_logits.append([amodal_masks_logits_, visible_masks_logits_])
-
-                output_feature.append(amodal_feature_maps_ + visible_feature_maps_)
+            output_feature.append(amodal_feature_maps_ + visible_feature_maps_)
 
         return output_mask_logits, output_feature
 
     def forward_through(self, x1, x2):
         features = []
+
         i = 0
         for layer in self.amodal_conv_norm_relus:
             x1 = layer(x1)
@@ -857,6 +569,8 @@ class Parallel_Amodal_Visible_Head(nn.Module):
         if i in self.fm:
             features.append(x1)
         amodal_mask_logits = self.amodal_predictor(x1)
+
+        ##SO THIS IS THE PARALLEL AND AMODAL SECTIONS
 
         i = 0
         for layer in self.visible_conv_norm_relus:
