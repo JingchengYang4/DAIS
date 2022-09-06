@@ -36,6 +36,15 @@ pip install git+https://github.com/philferriere/cocoapi.git#subdirectory=PythonA
 ```
 
 ## Data
+```
+wget 'GET DATASET FROM KITTI'
+mv data_object_image_2.zip DAIS
+mkdir datasets/KINS
+mv data_object_image_2.zip datasets/KINS
+cd datasets/KINS
+unzip data_object_image_2.zip
+```
+
 
 ## Training
 
