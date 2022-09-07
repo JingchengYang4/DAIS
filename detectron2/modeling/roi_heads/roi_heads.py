@@ -755,7 +755,7 @@ class Parallel_Amodal_Visible_ROIHeads(ROIHeads):
         self._init_box_head(cfg)
         self._init_mask_head(cfg)
         self.iter = 0
-        self.depth_aware =  cfg.MODEL.DEPTH_FEATURE_EXTRACTION
+        self.depth_pooling = cfg.MODEL.DEPTH.POOLING
 
     def _init_box_head(self, cfg):
         # fmt: off
@@ -863,7 +863,7 @@ class Parallel_Amodal_Visible_ROIHeads(ROIHeads):
         features_list = [features[f] for f in self.in_features]
         if self.training:
 
-            if self.depth_aware:
+            if self.depth_pooling:
                 losses = self._forward_box(features_list, proposals, self.depth_list)
             else:
                 losses = self._forward_box(features_list, proposals)

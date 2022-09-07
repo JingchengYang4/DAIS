@@ -39,10 +39,13 @@ class GeneralizedRCNN(nn.Module):
         self.roi_heads = build_roi_heads(cfg, self.backbone.output_shape())
         self.input_format = cfg.INPUT.FORMAT
         self.vis_period = cfg.VIS_PERIOD
-        self.extract_depth = cfg.MODEL.DEPTH_FEATURE_EXTRACTION
-        if self.extract_depth:
+        self.predict_depth = cfg.MODEL.DEPTH.PREDICT
+        if self.predict_depth:
+            self.extract_depth = cfg.MODEL.DEPTH.EXTRACT_FEATURES
             self.depth_predictor = DepthPredictionModule()
-
+            self.depth_std = cfg.MODEL.DEPTH.PIXEL_STD
+            self.depth_mean = cfg.MODEL.DEPTH.PIXEL_MEAN
+            self.visualize_depth = cfg.MODEL.DEPTH.VISUALIZE
 
         assert len(cfg.MODEL.PIXEL_MEAN) == len(cfg.MODEL.PIXEL_STD)
         num_channels = len(cfg.MODEL.PIXEL_MEAN)
@@ -134,19 +137,23 @@ class GeneralizedRCNN(nn.Module):
         else:
             gt_instances = None
 
-        if self.extract_depth:
+        if self.predict_depth:
             image = torch.flip(images.tensor, [1])#switches bgr to rgb
             image -= torch.min(image)#recenter RGB to 0-255
             image /= 255
             depth = self.depth_predictor.Predict(image)
             depth_tensor = torch.tensor([[np.log10(depth)]]).cuda()
-            images.tensor = torch.cat((images.tensor, depth_tensor), 1)
-            if False:
+            depth_tensor = (depth_tensor - torch.mean(depth_tensor)) / torch.std(depth_tensor)
+            if self.extract_depth:
+                images.tensor = torch.cat((images.tensor, depth_tensor), 1)
+
+            if self.visualize_depth:
                 f, axarrr = plt.subplots(2, 1)
                 axarrr[0].imshow(image.cpu()[0].permute(1, 2, 0))
                 #print(depth, type(depth))
                 axarrr[1].imshow(np.log10(depth))
                 plt.show()
+                #quit()
 
         #I WILL DEAL WITH YOU IN THE FUTURE, AGHHHH!!!
         features = self.backbone(images.tensor)
@@ -160,7 +167,7 @@ class GeneralizedRCNN(nn.Module):
 
         #print(self.roi_heads)
         #roi head shere
-        if self.extract_depth:
+        if self.predict_depth:
             _, detector_losses = self.roi_heads(images, features, proposals, gt_instances, depth=depth_tensor)
         else:
             _, detector_losses = self.roi_heads(images, features, proposals, gt_instances)
