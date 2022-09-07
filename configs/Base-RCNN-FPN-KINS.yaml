@@ -27,11 +27,11 @@ MODEL:
   ROI_BOX_HEAD:
     NAME: "FastRCNNConvFCHead"
     NUM_FC: 2
-    POOLER_RESOLUTION: 28
+    POOLER_RESOLUTION: 14
   ROI_MASK_HEAD:
     NAME: "MaskRCNNConvUpsampleHead"
     NUM_CONV: 4
-    POOLER_RESOLUTION: 56
+    POOLER_RESOLUTION: 28
 DATASETS:
   TRAIN: ("kins_train",)
   TEST: ("kins_val",)
