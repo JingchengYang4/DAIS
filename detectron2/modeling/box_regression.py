@@ -76,11 +76,13 @@ class Box2BoxTransform(object):
                 box transformations for the single box boxes[i].
             boxes (Tensor): boxes to transform, of shape (N, 4)
         """
-        assert torch.isfinite(deltas).all().item(), "Box regression deltas become infinite or NaN!"
-        #torch.nan_to_num(deltas, nan=0, posinf=0, neginf=0)
+        deltas[torch.isnan(deltas)] = 0
+        deltas[deltas == float('inf')] = 0
+        deltas[deltas == -float('inf')] = 0
         #assert torch.isfinite(deltas).all().item()
+        #assert torch.isnan(deltas).all().item(), "NANANAN"
+        assert torch.isfinite(deltas).all().item(), "Box regression deltas become infinite or NaN!"
         boxes = boxes.to(deltas.dtype)
-
         widths = boxes[:, 2] - boxes[:, 0]
         heights = boxes[:, 3] - boxes[:, 1]
         ctr_x = boxes[:, 0] + 0.5 * widths

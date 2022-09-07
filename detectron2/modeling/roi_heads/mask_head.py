@@ -652,7 +652,11 @@ class Parallel_Amodal_Visible_Head(nn.Module):
         self.version      = cfg.MODEL.ROI_MASK_HEAD.VERSION
         self._output_size = (input_shape.channels, input_shape.height, input_shape.width)
         self.attention_mode = cfg.MODEL.ROI_MASK_HEAD.ATTENTION_MODE
+
+        self.edge_occlusion = cfg.MODEL.DEPTH.EDGE_OCCLUSION
         # fmt: on
+
+        self.debug_iterations = 0
 
         self.amodal_conv_norm_relus = []
         self.visible_conv_norm_relus = []
@@ -728,7 +732,6 @@ class Parallel_Amodal_Visible_Head(nn.Module):
             )
 
     def forward(self, x, instances=None):
-
         output_mask_logits = []
         output_feature = []
         masks_logits, feature_maps = self.forward_through(x, x)
@@ -830,16 +833,41 @@ class Parallel_Amodal_Visible_Head(nn.Module):
 
             output_mask_logits.append([amodal_masks_logits_, visible_masks_logits_])
 
+            #if self.edge_occlusion:
+
+            #what is all the mask logits? I don't know
             if False:
-                print(amodal_masks_logits_.size())
-                for mask in amodal_masks_logits_:
-                    plt.imshow(mask[0].cpu().detach().numpy())
-                    plt.show()
-                quit()
+                self.debug_iterations += 1
+                print(self.debug_iterations)
+                if self.debug_iterations > 3000:
+                    for mask in amodal_masks_logits_:
+                        plt.imshow(mask[0].cpu().detach().numpy())
+                        plt.show()
+
 
             if instances[0].has("gt_masks"):
                 mask_side_len = x.size(2)
                 amodal_attention, visible_attention = get_gt_masks(instances, mask_side_len, masks_logits)
+
+                #print("AMODAL MASK", amodal_attention.size())
+                #print("AMODAL PREDICTION", masks_logits[0].size())
+
+                if False:
+                    for i in range(len(amodal_attention)):
+                        f, axarrr = plt.subplots(1, 6)
+                        axarrr[0].imshow(amodal_attention[i].cpu().detach()[0])
+                        axarrr[1].imshow(visible_attention[i].cpu().detach()[0])
+
+                        amodal_mask = amodal_attention[i].cpu().detach()[0]
+                        visible_mask = visible_attention[i].cpu().detach()[0]
+                        axarrr[2].imshow(np.logical_xor(amodal_mask, visible_mask))
+                        #plt.show()
+                #We believe the first dimensoin of amodal masks is each shape?
+
+
+                #so mask logits is amodal + visible masks
+                #then we have amodal and visible attention so...
+
 
                 if self.SPRef:
                     amodal_masks_logits_, amodal_feature_maps_ = self.single_head_forward(
@@ -849,6 +877,8 @@ class Parallel_Amodal_Visible_Head(nn.Module):
                 visible_masks_logits_, visible_feature_maps_ = self.single_head_forward(x * amodal_attention, "visible")
 
                 output_mask_logits.append([amodal_masks_logits_, visible_masks_logits_])
+
+                #print(visible_masks_logits_[0].size())
 
                 output_feature.append(amodal_feature_maps_ + visible_feature_maps_)
 

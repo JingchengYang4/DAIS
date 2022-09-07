@@ -840,7 +840,12 @@ class Parallel_Amodal_Visible_ROIHeads(ROIHeads):
         See :class:`ROIHeads.forward`.
         """
 
-        if depth is not None:
+        if False and self.iter > 3000:
+            for k in self.in_features:
+                plt.imshow(features[k].cpu().detach().numpy()[0][0])
+                plt.show()
+
+        if self.depth_pooling and depth is not None:
             #print("BRUH I HAVE DEPTH!")
             depth_list = []
             for k in self.in_features:
@@ -848,8 +853,6 @@ class Parallel_Amodal_Visible_ROIHeads(ROIHeads):
                 scaled_depth = F.interpolate(depth, size=features[k][0][0].size(), mode='bilinear', align_corners=True)
                 depth_list.append(scaled_depth)
                 #print(scaled_depth.size())
-                #plt.imshow(scaled_depth.cpu().detach().numpy()[0][0])
-                #plt.show()
             self.depth_list = depth_list
             del depth_list
             del depth
@@ -980,6 +983,7 @@ class Parallel_Amodal_Visible_ROIHeads(ROIHeads):
             mask_features = self.mask_pooler(features, proposal_boxes)  # num_boxes*256*14*14
             losses = {}
             if self._cfg.MODEL.ROI_MASK_HEAD.AMODAL_FEATURE_MATCHING[0] is not None:
+                #GET THE MASKS HERE?
                 mask_logits, features = self.mask_head(mask_features, proposals)  # num_boxes*1*28*28
                 losses.update({"loss_fm": mask_fm_loss(features, self._cfg.MODEL.ROI_MASK_HEAD.AMODAL_FM_BETA)})
             else:
@@ -988,6 +992,8 @@ class Parallel_Amodal_Visible_ROIHeads(ROIHeads):
                 mask_logits[0][0], proposals, mode="amodal", version="n")})
             losses.update({"loss_vmask": amodal_mask_rcnn_loss(
                 mask_logits[0][1], proposals, mode="visible", version="n")})
+
+            #print(len(mask_logits))
 
             if len(mask_logits) >= 2:
                 weights = self.attention_weights(mask_logits[0], proposals)
@@ -998,6 +1004,7 @@ class Parallel_Amodal_Visible_ROIHeads(ROIHeads):
                 losses.update({"loss_vmask_a": amodal_mask_rcnn_loss(
                     mask_logits[1][1], proposals, weights=weights[0], mode="visible", version="a")})
             if len(mask_logits) >= 3:
+                #THIS IS IT
                 if len(mask_logits[2]) >= 2:
                     losses.update({"loss_amask_g": amodal_mask_rcnn_loss(
                         mask_logits[2][0], proposals, weights=self._cfg.MODEL.ROI_MASK_HEAD.GT_AMODAL_WEIGHT)})
@@ -1026,6 +1033,12 @@ class Parallel_Amodal_Visible_ROIHeads(ROIHeads):
                         {"loss_recls": self._cfg.MODEL.ROI_MASK_HEAD.RECLS_NET.LAMBDA * mask_recls_adaptive_loss(
                             self.recls, get_pred_masks_logits_by_cls(mask_logits[x][1], proposals)[0],
                             mask_features,proposals, gt_weight=self.gt_weight,)})
+
+            #so probably need to get them here I believe
+
+            print(mask_logits)
+            
+            quit()
 
             return losses
 

@@ -90,6 +90,10 @@ class GeneralizedRCNN(nn.Module):
             vis_img = vis_img.transpose(2, 0, 1)
             vis_name = " 1. GT bounding boxes  2. Predicted proposals"
             storage.put_image(vis_name, vis_img)
+            #print(vis_img.shape)
+            #plt.imshow(np.transpose(vis_img, (1, 2, 0)))
+            #plt.show()
+            #print("OK", vis_img)
 
     def forward(self, batched_inputs, do_postprocess=True):
         """
@@ -142,6 +146,7 @@ class GeneralizedRCNN(nn.Module):
             image -= torch.min(image)#recenter RGB to 0-255
             image /= 255
             depth = self.depth_predictor.Predict(image)
+            del image
             depth_tensor = torch.tensor([[np.log10(depth)]]).cuda()
             depth_tensor = (depth_tensor - torch.mean(depth_tensor)) / torch.std(depth_tensor)
             if self.extract_depth:
@@ -154,6 +159,8 @@ class GeneralizedRCNN(nn.Module):
                 axarrr[1].imshow(np.log10(depth))
                 plt.show()
                 #quit()
+
+        #print("STUFF I GUESS")
 
         #I WILL DEAL WITH YOU IN THE FUTURE, AGHHHH!!!
         features = self.backbone(images.tensor)
