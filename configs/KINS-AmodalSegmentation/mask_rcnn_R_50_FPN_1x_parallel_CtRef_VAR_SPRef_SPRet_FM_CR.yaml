@@ -26,7 +26,7 @@ MODEL:
       NUM_CONV: 2
       ALPHA: 3.0
       RESCORING: True
-      LOAD_CODEBOOK: True
+      LOAD_CODEBOOK: False
       MEMORY_REFINE: True
       MEMORY_REFINE_K: 16
 TEST:
