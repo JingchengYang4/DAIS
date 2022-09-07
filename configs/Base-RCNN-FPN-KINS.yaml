@@ -31,7 +31,7 @@ MODEL:
   ROI_MASK_HEAD:
     NAME: "MaskRCNNConvUpsampleHead"
     NUM_CONV: 4
-    POOLER_RESOLUTION: 18
+    POOLER_RESOLUTION: 24
 DATASETS:
   TRAIN: ("kins_train",)
   TEST: ("kins_val",)
