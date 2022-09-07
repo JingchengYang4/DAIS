@@ -1,4 +1,4 @@
-<mxfile host="app.diagrams.net" modified="2022-09-07T09:53:29.508Z" agent="5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/15.6 Safari/605.1.15" etag="4FCEYv5ZNu_WbHhR_1QM" version="20.2.8" type="github">
+<mxfile host="app.diagrams.net" modified="2022-09-07T09:54:24.393Z" agent="5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/15.6 Safari/605.1.15" etag="zb42_VpcCPoNke8TFclU" version="20.2.8" type="github">
   <diagram id="AN-StCZbgenjLK352rBk" name="第 1 页">
     <mxGraphModel dx="2242" dy="1309" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="1920" pageHeight="1200" math="0" shadow="0">
       <root>
@@ -56,7 +56,7 @@
           <mxGeometry x="1240" y="480" width="640" height="680" as="geometry" />
         </mxCell>
         <mxCell id="WeSRy52PTeBeFJiV08kK-30" value="&lt;b&gt;&lt;font style=&quot;font-size: 32px;&quot;&gt;Occlusion Edge&lt;/font&gt;&lt;/b&gt;" style="text;html=1;align=left;verticalAlign=top;resizable=0;points=[];autosize=1;strokeColor=none;fillColor=none;fontSize=24;" vertex="1" parent="1">
-          <mxGeometry x="1260" y="50" width="270" height="50" as="geometry" />
+          <mxGeometry x="1260" y="60" width="270" height="50" as="geometry" />
         </mxCell>
         <mxCell id="WeSRy52PTeBeFJiV08kK-31" value="&lt;b&gt;&lt;font style=&quot;font-size: 32px;&quot;&gt;Amodal Proposal Network&lt;/font&gt;&lt;/b&gt;" style="text;html=1;align=left;verticalAlign=top;resizable=0;points=[];autosize=1;strokeColor=none;fillColor=none;fontSize=24;" vertex="1" parent="1">
           <mxGeometry x="1260" y="500" width="420" height="50" as="geometry" />
@@ -195,6 +195,12 @@
         </mxCell>
         <mxCell id="WeSRy52PTeBeFJiV08kK-102" value="feat map" style="rounded=0;whiteSpace=wrap;html=1;fontSize=24;" vertex="1" parent="1">
           <mxGeometry x="208.88" y="509" width="111.5" height="70" as="geometry" />
+        </mxCell>
+        <mxCell id="WeSRy52PTeBeFJiV08kK-104" value="" style="whiteSpace=wrap;html=1;aspect=fixed;fontSize=14;" vertex="1" parent="1">
+          <mxGeometry x="860" y="410" width="200" height="200" as="geometry" />
+        </mxCell>
+        <mxCell id="WeSRy52PTeBeFJiV08kK-105" value="" style="whiteSpace=wrap;html=1;aspect=fixed;fontSize=14;" vertex="1" parent="1">
+          <mxGeometry x="1650" y="130" width="200" height="200" as="geometry" />
         </mxCell>
       </root>
     </mxGraphModel>
