@@ -40,7 +40,7 @@ class Edge_Occlusion(nn.Module):
         x = self.edge_conv1(x)
 
         if self.vis_period > 0:
-            if self.i % 25 == 0 and x.size()[0] > 0:
+            if self.i % 100 == 0 and x.size()[0] > 0:
                 f, axarrr = plt.subplots(2, 1)
                 axarrr[0].imshow(x[0][0].cpu().detach().numpy())
                 axarrr[1].imshow(gt[0][0].cpu().detach().numpy())
