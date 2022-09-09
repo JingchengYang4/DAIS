@@ -989,7 +989,7 @@ class Parallel_Amodal_Visible_ROIHeads(ROIHeads):
             proposal_boxes = [x.proposal_boxes for x in proposals]
             if depth_list is not None:
                 mask_features, mask_depths = self.mask_pooler(features, proposal_boxes, depth_list)  # num_boxes*256*14*14
-                proposals[0].set('features', mask_features)
+                #proposals[0].set('features', mask_features)
                 proposals[0].set('depth', mask_depths)
             else:
                 mask_features = self.mask_pooler(features, proposal_boxes, depth_list)  # num_boxes*256*14*14

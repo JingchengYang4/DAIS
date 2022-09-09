@@ -894,7 +894,7 @@ class Parallel_Amodal_Visible_Head(nn.Module):
                     og_tensor = torch.stack(occlusion_gt, 0).float().cuda().to(masks_logits[0].device)
                     #print(og_tensor.size())
 
-                    eo_loss, occlusion = self.eo_head.forward(nd_tensor, og_tensor, instances[0].features)
+                    eo_loss, occlusion = self.eo_head.forward(nd_tensor, og_tensor)#, instances[0].features)
 
                 #We believe the first dimensoin of amodal masks is each shape?
 
