@@ -17,6 +17,7 @@ You may want to write your own script with your datasets and other customization
 
 import logging
 import os
+import warnings
 from datetime import datetime
 from collections import OrderedDict
 import torch
@@ -135,6 +136,8 @@ def setup(args):
 
 
 def main(args):
+
+
     cfg = setup(args)
     if args.eval_only:
         model = Trainer.build_model(cfg)

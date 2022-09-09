@@ -1,7 +1,10 @@
 # Copyright (c) Facebook, Inc. and its affiliates. All Rights Reserved.
 import math
 import sys
+
+import matplotlib.pyplot as plt
 import torch
+from matplotlib.patches import Rectangle
 from torch import nn
 from torchvision.ops import RoIPool
 
@@ -195,6 +198,7 @@ class ROIPooler(nn.Module):
                 A tensor of shape (M, C, output_size, output_size) where M is the total number of
                 boxes aggregated over all N batch images and C is the number of channels in `x`.
         """
+
         num_level_assignments = len(self.level_poolers)
 
         assert isinstance(x, list) and isinstance(
@@ -214,6 +218,8 @@ class ROIPooler(nn.Module):
 
         pooler_fmt_boxes = convert_boxes_to_pooler_format(box_lists)
 
+        #print(pooler_fmt_boxes.size())
+
         if num_level_assignments == 1:
             return self.level_poolers[0](x[0], pooler_fmt_boxes)
 
@@ -230,9 +236,32 @@ class ROIPooler(nn.Module):
             (num_boxes, num_channels, output_size, output_size), dtype=dtype, device=device
         )
 
+        if depths is not None:
+            output_depth = torch.zeros(
+                (num_boxes, 1, output_size, output_size), dtype=dtype, device=device
+            )
+
         for level, (x_level, pooler) in enumerate(zip(x, self.level_poolers)):
             inds = torch.nonzero(level_assignments == level).squeeze(1)
+            #probably index of boxes that should be cropped at this level
             pooler_fmt_boxes_level = pooler_fmt_boxes[inds]
+            #print(level)
+            #print(pooler_fmt_boxes_level.size())
+            #print("XLEVEL", x_level.size())
             output[inds] = pooler(x_level, pooler_fmt_boxes_level)
 
-        return output
+            if depths is not None:
+                output_depth[inds] = pooler(depths[level], pooler_fmt_boxes_level)
+
+            if False:
+                f, axarrr = plt.subplots(1, 3)
+                axarrr[0].imshow(x_level.cpu().detach().numpy()[0][0])
+                axarrr[1].imshow(output[inds].cpu().detach().numpy()[0][0])
+                axarrr[2].imshow(output_depth[inds].cpu().detach().numpy()[0][0])
+                #print(output[inds].size())
+                plt.show()
+
+        if depths is not None:
+            return output, output_depth
+        else:
+            return output

@@ -1,5 +1,5 @@
 _BASE_: "../Base-RCNN-FPN-KINS.yaml"
-VIS_PERIOD: 10
+VIS_PERIOD: 300
 MODEL:
   MASK_ON: True
   DEPTH:

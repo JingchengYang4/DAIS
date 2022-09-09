@@ -138,3 +138,5 @@ detectron2/model_zoo/configs
 /depth/pytorch/models/
 
 models/
+
+visualization/

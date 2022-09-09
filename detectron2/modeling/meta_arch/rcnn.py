@@ -18,6 +18,8 @@ from ..proposal_generator import build_proposal_generator
 from ..roi_heads import build_roi_heads
 from .build import META_ARCH_REGISTRY
 
+import os
+
 __all__ = ["GeneralizedRCNN", "ProposalNetwork"]
 
 
@@ -40,12 +42,16 @@ class GeneralizedRCNN(nn.Module):
         self.input_format = cfg.INPUT.FORMAT
         self.vis_period = cfg.VIS_PERIOD
         self.predict_depth = cfg.MODEL.DEPTH.PREDICT
+        self.output_dir = cfg.OUTPUT_DIR
         if self.predict_depth:
             self.extract_depth = cfg.MODEL.DEPTH.EXTRACT_FEATURES
             self.depth_predictor = DepthPredictionModule()
             self.depth_std = cfg.MODEL.DEPTH.PIXEL_STD
             self.depth_mean = cfg.MODEL.DEPTH.PIXEL_MEAN
             self.visualize_depth = cfg.MODEL.DEPTH.VISUALIZE
+
+        if self.vis_period > 0:
+            os.makedirs(self.output_dir + '/visualization/', exist_ok=True)
 
         assert len(cfg.MODEL.PIXEL_MEAN) == len(cfg.MODEL.PIXEL_STD)
         num_channels = len(cfg.MODEL.PIXEL_MEAN)
@@ -71,6 +77,7 @@ class GeneralizedRCNN(nn.Module):
         prop_boxes = [p for p in proposals]
         storage = get_event_storage()
         max_vis_prop = 20
+        index = 0
         for input, prop in zip(inputs, prop_boxes):
             img = input["image"].cpu().numpy()
             assert img.shape[0] == 3, "Images should have 3 channels."
@@ -91,7 +98,10 @@ class GeneralizedRCNN(nn.Module):
             vis_name = " 1. GT bounding boxes  2. Predicted proposals"
             storage.put_image(vis_name, vis_img)
             #print(vis_img.shape)
-            #plt.imshow(np.transpose(vis_img, (1, 2, 0)))
+            plt.imshow(np.transpose(vis_img, (1, 2, 0)))
+            #plt.gca().set_aspect(1)
+            plt.savefig(self.output_dir + '/visualization/' + str(storage.iter) + '_' + str(index) + '.png', dpi=500)
+            index += 1
             #plt.show()
             #print("OK", vis_img)
 
@@ -146,17 +156,19 @@ class GeneralizedRCNN(nn.Module):
             image -= torch.min(image)#recenter RGB to 0-255
             image /= 255
             depth = self.depth_predictor.Predict(image)
-            del image
-            depth_tensor = torch.tensor([[np.log10(depth)]]).cuda()
+            depth = np.log10(depth)
+            depth_tensor = torch.tensor([[depth]]).cuda()
             depth_tensor = (depth_tensor - torch.mean(depth_tensor)) / torch.std(depth_tensor)
             if self.extract_depth:
                 images.tensor = torch.cat((images.tensor, depth_tensor), 1)
+
+            #print(torch.min(depth_tensor), torch.max(depth_tensor))
 
             if self.visualize_depth:
                 f, axarrr = plt.subplots(2, 1)
                 axarrr[0].imshow(image.cpu()[0].permute(1, 2, 0))
                 #print(depth, type(depth))
-                axarrr[1].imshow(np.log10(depth))
+                axarrr[1].imshow(depth)
                 plt.show()
                 #quit()
 
@@ -166,6 +178,7 @@ class GeneralizedRCNN(nn.Module):
         features = self.backbone(images.tensor)
         if self.proposal_generator:
             #this is true when running the code
+            #print(self.proposal_generator)
             proposals, proposal_losses = self.proposal_generator(images, features, gt_instances)
         else:
             assert "proposals" in batched_inputs[0]

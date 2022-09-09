@@ -12,6 +12,7 @@ from torch.nn import functional as F
 from detectron2.layers import ShapeSpec
 from typing import Dict, List, Optional, Tuple, Union
 from detectron2.structures import Boxes, Instances, pairwise_iou, ImageList, BitMasks
+from detectron2.structures.depths import Depths
 from detectron2.utils.events import get_event_storage
 from detectron2.utils.registry import Registry
 from detectron2.layers import cat
@@ -866,14 +867,18 @@ class Parallel_Amodal_Visible_ROIHeads(ROIHeads):
         features_list = [features[f] for f in self.in_features]
         if self.training:
 
-            if self.depth_pooling:
-                losses = self._forward_box(features_list, proposals, self.depth_list)
-            else:
-                losses = self._forward_box(features_list, proposals)
+            losses = self._forward_box(features_list, proposals)
             # During training the proposals used by the box head are
             # used by the mask, keypoint (and densepose) heads.
 
-            losses.update(self._forward_mask(features_list, proposals))
+            if self.depth_pooling:
+                mask_loss = self._forward_mask(features_list, proposals, self.depth_list)
+            else:
+                mask_loss = self._forward_mask(features_list, proposals)
+
+            #print(proposals[0])
+
+            losses.update(mask_loss)
 
             return proposals, losses
         else:
@@ -916,7 +921,7 @@ class Parallel_Amodal_Visible_ROIHeads(ROIHeads):
         instances = self._forward_mask(features, instances)
         return instances
 
-    def _forward_box(self, features, proposals, depth_list=None):
+    def _forward_box(self, features, proposals):
         """
         Forward logic of the box prediction branch.
 
@@ -932,12 +937,12 @@ class Parallel_Amodal_Visible_ROIHeads(ROIHeads):
             In inference, a list of `Instances`, the predicted instances.
         """
 
-        box_features = self.box_pooler(features, [x.proposal_boxes for x in proposals], depth_list)
+        #print("IMMA POOL EVERYTHING")
+        box_features = self.box_pooler(features, [x.proposal_boxes for x in proposals])
 
-        #print(box_features.size())
-        #quit()
-
+        #print(self.box_head)
         box_features = self.box_head(box_features)
+
         self.pred_class_logits, pred_proposal_deltas = self.box_predictor(box_features)
         del box_features
         outputs = FastRCNNOutputs(
@@ -957,7 +962,7 @@ class Parallel_Amodal_Visible_ROIHeads(ROIHeads):
 
         return pred_instances
 
-    def _forward_mask(self, features, instances):
+    def _forward_mask(self, features, instances, depth_list=None):
         """
         Forward logic of the mask prediction branch.
 
@@ -977,14 +982,29 @@ class Parallel_Amodal_Visible_ROIHeads(ROIHeads):
             return {} if self.training else instances
 
         if self.training:
+            #so prboably some are being selected
             # The loss is only defined on positive proposals.
+            #THIS IS WHERE DEPTH NEED TO BE SELECTED AS WELL
             proposals, _ = select_foreground_proposals(instances, self.num_classes)
             proposal_boxes = [x.proposal_boxes for x in proposals]
-            mask_features = self.mask_pooler(features, proposal_boxes)  # num_boxes*256*14*14
+            if depth_list is not None:
+                mask_features, mask_depths = self.mask_pooler(features, proposal_boxes, depth_list)  # num_boxes*256*14*14
+                proposals[0].set('features', mask_features)
+                proposals[0].set('depth', mask_depths)
+            else:
+                mask_features = self.mask_pooler(features, proposal_boxes, depth_list)  # num_boxes*256*14*14
+
             losses = {}
             if self._cfg.MODEL.ROI_MASK_HEAD.AMODAL_FEATURE_MATCHING[0] is not None:
                 #GET THE MASKS HERE?
-                mask_logits, features = self.mask_head(mask_features, proposals)  # num_boxes*1*28*28
+                #Yeah so great beause depth is already being send
+                if depth_list is not None:
+                    mask_logits, features, occlusion = self.mask_head(mask_features, proposals)
+                    losses.update({"loss_oe": occlusion[0]})
+                    occlusion_edge = occlusion[1]
+                else:
+                    mask_logits, features = self.mask_head(mask_features, proposals)  # num_boxes*1*28*28
+                #print(features[0][0].size())
                 losses.update({"loss_fm": mask_fm_loss(features, self._cfg.MODEL.ROI_MASK_HEAD.AMODAL_FM_BETA)})
             else:
                 mask_logits, _ = self.mask_head(mask_features, proposals)  # num_boxes*1*28*28
@@ -992,8 +1012,6 @@ class Parallel_Amodal_Visible_ROIHeads(ROIHeads):
                 mask_logits[0][0], proposals, mode="amodal", version="n")})
             losses.update({"loss_vmask": amodal_mask_rcnn_loss(
                 mask_logits[0][1], proposals, mode="visible", version="n")})
-
-            #print(len(mask_logits))
 
             if len(mask_logits) >= 2:
                 weights = self.attention_weights(mask_logits[0], proposals)
@@ -1035,10 +1053,6 @@ class Parallel_Amodal_Visible_ROIHeads(ROIHeads):
                             mask_features,proposals, gt_weight=self.gt_weight,)})
 
             #so probably need to get them here I believe
-
-            print(mask_logits)
-            
-            quit()
 
             return losses
 
@@ -1455,3 +1469,4 @@ and the occlusion mask (occlusion mask head).
         instances, visible_mask_logits = self._forward_visible_mask(features_list, instances)
         instances = self._forward_invisible_mask(amodal_mask_logits, visible_mask_logits, instances)
         return instances
+#%%

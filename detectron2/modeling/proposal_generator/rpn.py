@@ -121,6 +121,8 @@ class RPN(nn.Module):
         )
         self.rpn_head = build_rpn_head(cfg, [input_shape[f] for f in self.in_features])
 
+        self.depth_pooling = cfg.MODEL.DEPTH.POOLING
+
     def forward(self, images, features, gt_instances=None):
         """
         Args:
