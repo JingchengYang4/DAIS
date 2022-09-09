@@ -1,0 +1,28 @@
+<mxfile host="app.diagrams.net" modified="2022-09-09T12:34:28.249Z" agent="5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/15.6 Safari/605.1.15" etag="j-dzqpx_VV6bJL_x33dL" version="20.3.0" type="github">
+  <diagram id="FRysWw0D8v40mltmZ5uW" name="第 1 页">
+    <mxGraphModel dx="2055" dy="1200" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="1600" pageHeight="900" math="0" shadow="0">
+      <root>
+        <mxCell id="0" />
+        <mxCell id="1" parent="0" />
+        <mxCell id="Pfw0Aef5ZK-2iUKk-qxC-1" value="" style="whiteSpace=wrap;html=1;aspect=fixed;fontSize=17;fillColor=#f8cecc;strokeColor=none;" vertex="1" parent="1">
+          <mxGeometry x="280" y="160" width="360" height="360" as="geometry" />
+        </mxCell>
+        <mxCell id="Pfw0Aef5ZK-2iUKk-qxC-2" value="" style="whiteSpace=wrap;html=1;aspect=fixed;fontSize=17;fillColor=#dae8fc;strokeColor=none;" vertex="1" parent="1">
+          <mxGeometry x="400" y="280" width="360" height="360" as="geometry" />
+        </mxCell>
+        <mxCell id="Pfw0Aef5ZK-2iUKk-qxC-3" value="&lt;font style=&quot;font-size: 24px;&quot;&gt;Area of Overlap&lt;/font&gt;" style="whiteSpace=wrap;html=1;aspect=fixed;fontSize=17;fillColor=#fff2cc;strokeColor=#d6b656;fontStyle=1" vertex="1" parent="1">
+          <mxGeometry x="400" y="280" width="240" height="240" as="geometry" />
+        </mxCell>
+        <mxCell id="Pfw0Aef5ZK-2iUKk-qxC-5" value="" style="whiteSpace=wrap;html=1;aspect=fixed;fontSize=17;fillColor=#dae8fc;strokeColor=none;" vertex="1" parent="1">
+          <mxGeometry x="930" y="160" width="360" height="360" as="geometry" />
+        </mxCell>
+        <mxCell id="Pfw0Aef5ZK-2iUKk-qxC-6" value="" style="whiteSpace=wrap;html=1;aspect=fixed;fontSize=17;fillColor=#dae8fc;strokeColor=none;" vertex="1" parent="1">
+          <mxGeometry x="1050" y="280" width="360" height="360" as="geometry" />
+        </mxCell>
+        <mxCell id="Pfw0Aef5ZK-2iUKk-qxC-7" value="&lt;b&gt;Area of Union&lt;/b&gt;" style="text;html=1;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;whiteSpace=wrap;rounded=0;fontSize=24;" vertex="1" parent="1">
+          <mxGeometry x="1100" y="385" width="180" height="30" as="geometry" />
+        </mxCell>
+      </root>
+    </mxGraphModel>
+  </diagram>
+</mxfile>
