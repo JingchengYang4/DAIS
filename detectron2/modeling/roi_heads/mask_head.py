@@ -865,6 +865,7 @@ class Parallel_Amodal_Visible_Head(nn.Module):
                 if self.edge_occlusion:
                     normalized_depths = []
                     occlusion_gt = []
+                    visible_masks = []
 
                     for i in range(len(amodal_attention)):
                         amodal_mask = amodal_attention[i].cpu().detach()[0].numpy()
@@ -893,12 +894,14 @@ class Parallel_Amodal_Visible_Head(nn.Module):
                         normalized_depths.append(torch.unsqueeze(torch.tensor(normalized_depth), 0))
                         #occlusion_gt.append(torch.unsqueeze(torch.tensor(dif*1), 0))
                         occlusion_gt.append(torch.unsqueeze(torch.tensor(amodal_mask*1), 0))
+                        visible_masks.append(torch.unsqueeze(torch.tensor(visible_mask*1), 0))
 
                     nd_tensor = torch.stack(normalized_depths, 0).cuda().to(masks_logits[0].device)
                     og_tensor = torch.stack(occlusion_gt, 0).float().cuda().to(masks_logits[0].device)
+                    vs_tensor = torch.stack(visible_masks, 0).float().cuda().to(masks_logits[0].device)
                     #print(og_tensor.size())
 
-                    eo_loss, occlusion = self.eo_head.forward(nd_tensor, og_tensor)#, instances[0].features)
+                    eo_loss, occlusion = self.eo_head.forward(nd_tensor, og_tensor, vs_tensor)#, instances[0].features)
 
                 #We believe the first dimensoin of amodal masks is each shape?
 
