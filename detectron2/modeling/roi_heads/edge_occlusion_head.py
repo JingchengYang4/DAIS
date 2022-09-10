@@ -29,7 +29,7 @@ class Edge_Occlusion(nn.Module):
         # 5 x 2 + 4 = 14
         self.dconv2 = nn.ConvTranspose2d(in_channels=32, out_channels=16, kernel_size=4, stride=2)
 
-        self.fconv = nn.Conv2d(in_channels=16, out_channels=1)
+        self.fconv = nn.Conv2d(in_channels=16, out_channels=1, kernel_size=1)
 
         self.loss = nn.BCEWithLogitsLoss()
         self.vis_period = cfg.VIS_PERIOD
