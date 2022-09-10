@@ -109,6 +109,11 @@ class Edge_Occlusion(nn.Module):
             x = F.relu(x)
             x = self.c3(x)
 
+
+        oe_loss = self.loss(x, gt)
+
+        x = torch.sigmoid(x)
+
         if self.vis_period > 0:
             if self.i % 100 == 0 and x.size()[0] > 0:
                 f, axarrr = plt.subplots(2, 1)
@@ -116,9 +121,5 @@ class Edge_Occlusion(nn.Module):
                 axarrr[1].imshow(gt[0][0].cpu().detach().numpy())
                 #plt.show()
                 plt.savefig(self.output_dir + '/visualization/OE_' + str(self.i) + '.png', dpi=800)
-
-        x = F.sigmoid(x)
-
-        self.i += 1
-        oe_loss = self.loss(x, gt)
+            self.i += 1
         return oe_loss, x
