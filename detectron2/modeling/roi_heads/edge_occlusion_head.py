@@ -18,7 +18,7 @@ class Edge_Occlusion(nn.Module):
 
         self.edge_conv0 = nn.Conv2d(in_channels=1, out_channels=4, kernel_size=1)
         self.edge_conv1 = nn.Conv2d(in_channels=4, out_channels=8, kernel_size=2, stride=2)#size of 7
-        self.edge_conv2 = nn.Conv2d(in_channels=16, out_channels=16, kernel_size=3, stride=2)#I BELIEVE OUPUT SIZE IS 3
+        self.edge_conv2 = nn.Conv2d(in_channels=8, out_channels=16, kernel_size=3, stride=2)#I BELIEVE OUPUT SIZE IS 3
         self.edge_conv3 = nn.Conv2d(in_channels=16, out_channels=32, kernel_size=3)
 
         # (1-1) x stride + kernel = 3
