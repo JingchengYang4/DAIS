@@ -76,7 +76,7 @@ class Edge_Occlusion(nn.Module):
             x = self.dconv0(x)
             x = F.relu(x)
 
-            x = self.upconv0(torch.cat((x, x0), 1))
+            x = self.upconv0(torch.cat((x, x2), 1))
             x = F.relu(x)
 
             x = self.dconv1(x)
@@ -88,7 +88,7 @@ class Edge_Occlusion(nn.Module):
             x = self.dconv2(x)
             x = F.relu(x)
 
-            x = self.upconv2(torch.cat((x, x2), 1))
+            x = self.upconv2(torch.cat((x, x0), 1))
             x = F.relu(x)
 
             x = self.fconv(x)
