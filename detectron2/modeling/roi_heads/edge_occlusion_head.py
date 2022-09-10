@@ -117,6 +117,8 @@ class Edge_Occlusion(nn.Module):
                 #plt.show()
                 plt.savefig(self.output_dir + '/visualization/OE_' + str(self.i) + '.png', dpi=800)
 
+        x = F.sigmoid(x)
+
         self.i += 1
         oe_loss = self.loss(x, gt)
         return oe_loss, x
