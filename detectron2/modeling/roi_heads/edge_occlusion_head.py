@@ -30,14 +30,14 @@ class Edge_Occlusion(nn.Module):
 
             # (3-1) x stride + kernel = 7
             # 2 x 2 + 2 = 6
-            self.dconv1 = nn.ConvTranspose2d(in_channels=16, out_channels=8, kernel_size=3, stride=2)
+            self.dconv1 = nn.ConvTranspose2d(in_channels=1, out_channels=1, kernel_size=3, stride=2)
             self.upconv1 = nn.Conv2d(in_channels=2, out_channels=1, kernel_size=1)
             # (7-1) x stride + kernel = 14
             # 6 x 2 + 2 = 14
-            self.dconv2 = nn.ConvTranspose2d(in_channels=8, out_channels=4, kernel_size=2, stride=2)
+            self.dconv2 = nn.ConvTranspose2d(in_channels=1, out_channels=1, kernel_size=2, stride=2)
             self.upconv2 = nn.Conv2d(in_channels=2, out_channels=1, kernel_size=1)
 
-            self.fconv = nn.Conv2d(in_channels=4, out_channels=1, kernel_size=1)
+            #self.fconv = nn.Conv2d(in_channels=4, out_channels=1, kernel_size=1)
         elif self.mode is 2:
             self.c1 = nn.Conv2d(in_channels=1, out_channels=16, kernel_size=3, stride=1, padding=1)
             self.c2 = nn.Conv2d(in_channels=16, out_channels=8, kernel_size=3, stride=1, padding=1)
@@ -91,7 +91,7 @@ class Edge_Occlusion(nn.Module):
             x = self.upconv2(torch.cat((x, x0), 1))
             x = F.relu(x)
 
-            x = self.fconv(x)
+            #x = self.fconv(x)
         elif self.mode is 2:
             x = self.c1(x)
             x = F.relu(x)
