@@ -891,8 +891,8 @@ class Parallel_Amodal_Visible_Head(nn.Module):
 
                         #print(torch.unsqueeze(torch.tensor(normalized_depth), 0).size())
                         normalized_depths.append(torch.unsqueeze(torch.tensor(normalized_depth), 0))
-                        #occlusion_gt.append(torch.unsqueeze(torch.tensor(dif*1), 0))
-                        occlusion_gt.append(torch.unsqueeze(torch.tensor(amodal_mask*1), 0))
+                        occlusion_gt.append(torch.unsqueeze(torch.tensor(dif*1), 0))
+                        #occlusion_gt.append(torch.unsqueeze(torch.tensor(amodal_mask*1), 0))
 
                     nd_tensor = torch.stack(normalized_depths, 0).cuda().to(masks_logits[0].device)
                     og_tensor = torch.stack(occlusion_gt, 0).float().cuda().to(masks_logits[0].device)
