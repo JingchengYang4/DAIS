@@ -16,7 +16,7 @@ class Edge_Occlusion(nn.Module):
         self.fconv3 = nn.Conv2d(in_channels=65, out_channels=32, kernel_size=1)
         self.fconv4 = nn.Conv2d(in_channels=33, out_channels=16, kernel_size=1)"""
 
-        self.mode = 1
+        self.mode = cfg.MODEL.DEPTH.EO_MODE
 
         if self.mode is 1:
             self.edge_conv0 = nn.Conv2d(in_channels=1, out_channels=8, kernel_size=1)
