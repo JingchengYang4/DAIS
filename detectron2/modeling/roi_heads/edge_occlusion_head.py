@@ -16,23 +16,36 @@ class Edge_Occlusion(nn.Module):
         self.fconv3 = nn.Conv2d(in_channels=65, out_channels=32, kernel_size=1)
         self.fconv4 = nn.Conv2d(in_channels=33, out_channels=16, kernel_size=1)"""
 
-        self.edge_conv0 = nn.Conv2d(in_channels=1, out_channels=4, kernel_size=1)
-        self.edge_conv1 = nn.Conv2d(in_channels=4, out_channels=8, kernel_size=2, stride=2)#size of 7
-        self.edge_conv2 = nn.Conv2d(in_channels=8, out_channels=16, kernel_size=3, stride=2)#I BELIEVE OUPUT SIZE IS 3
-        self.edge_conv3 = nn.Conv2d(in_channels=16, out_channels=32, kernel_size=3)
+        self.mode = 3
 
-        # (1-1) x stride + kernel = 3
-        self.dconv0 = nn.ConvTranspose2d(in_channels=32, out_channels=16, kernel_size=3)
+        if self.mode is 1:
+            self.edge_conv0 = nn.Conv2d(in_channels=1, out_channels=4, kernel_size=1)
+            self.edge_conv1 = nn.Conv2d(in_channels=4, out_channels=8, kernel_size=2, stride=2)#size of 7
+            self.edge_conv2 = nn.Conv2d(in_channels=8, out_channels=16, kernel_size=3, stride=2)#I BELIEVE OUPUT SIZE IS 3
+            self.edge_conv3 = nn.Conv2d(in_channels=16, out_channels=32, kernel_size=3)
 
-        # (3-1) x stride + kernel = 6
-        # 2 x 2 + 2 = 6
-        self.dconv1 = nn.ConvTranspose2d(in_channels=16, out_channels=8, kernel_size=2, stride=2)
+            # (1-1) x stride + kernel = 3
+            self.dconv0 = nn.ConvTranspose2d(in_channels=32, out_channels=16, kernel_size=3)
 
-        # (6-1) x stride + kernel = 14
-        # 5 x 2 + 4 = 14
-        self.dconv2 = nn.ConvTranspose2d(in_channels=8, out_channels=4, kernel_size=4, stride=2)
+            # (3-1) x stride + kernel = 6
+            # 2 x 2 + 2 = 6
+            self.dconv1 = nn.ConvTranspose2d(in_channels=16, out_channels=8, kernel_size=2, stride=2)
 
-        self.fconv = nn.Conv2d(in_channels=4, out_channels=1, kernel_size=1)
+            # (6-1) x stride + kernel = 14
+            # 5 x 2 + 4 = 14
+            self.dconv2 = nn.ConvTranspose2d(in_channels=8, out_channels=4, kernel_size=4, stride=2)
+
+            self.fconv = nn.Conv2d(in_channels=4, out_channels=1, kernel_size=1)
+        elif self.mode is 2:
+            self.c1 = nn.Conv2d(in_channels=1, out_channels=16, kernel_size=3, stride=1, padding=1)
+            self.c2 = nn.Conv2d(in_channels=16, out_channels=8, kernel_size=3, stride=1, padding=1)
+            self.c3 = nn.Conv2d(in_channels=8, out_channels=4, kernel_size=3, stride=1, padding=1)
+            self.c4 = nn.Conv2d(in_channels=4, out_channels=2, kernel_size=3, stride=1, padding=1)
+            self.c5 = nn.Conv2d(in_channels=2, out_channels=1, kernel_size=1)
+        elif self.mode is 3:
+            self.c1 = nn.Conv2d(in_channels=1, out_channels=32, kernel_size=1)
+            self.c2 = nn.Conv2d(in_channels=32, out_channels=16, kernel_size=1)
+            self.c3 = nn.Conv2d(in_channels=16, out_channels=1, kernel_size=1)
 
         self.loss = nn.BCEWithLogitsLoss()
         self.vis_period = cfg.VIS_PERIOD
@@ -42,26 +55,44 @@ class Edge_Occlusion(nn.Module):
             os.makedirs(self.output_dir + '/visualization/', exist_ok=True)
 
     def forward(self, depth, gt, visible=None):
-        x = self.edge_conv0(depth)
-        x = F.relu(x)
-        x = self.edge_conv1(x)
-        x = F.relu(x)
-        x = self.edge_conv2(x)
-        x = F.relu(x)
-        x = self.edge_conv3(x)
-        x = F.relu(x)
 
-        x = self.dconv0(x)
-        x = F.relu(x)
+        x = depth
 
-        #print(x.size())
+        if self.mode is 1:
+            x = self.edge_conv0(x)
+            x = F.relu(x)
+            x = self.edge_conv1(x)
+            x = F.relu(x)
+            x = self.edge_conv2(x)
+            x = F.relu(x)
+            x = self.edge_conv3(x)
+            x = F.relu(x)
 
-        x = self.dconv1(x)
-        x = F.relu(x)
-        x = self.dconv2(x)
-        x = F.relu(x)
+            x = self.dconv0(x)
+            x = F.relu(x)
 
-        x = self.fconv(x)
+            x = self.dconv1(x)
+            x = F.relu(x)
+            x = self.dconv2(x)
+            x = F.relu(x)
+
+            x = self.fconv(x)
+        elif self.mode is 2:
+            x = self.c1(x)
+            x = F.relu(x)
+            x = self.c2(x)
+            x = F.relu(x)
+            x = self.c3(x)
+            x = F.relu(x)
+            x = self.c4(x)
+            x = F.relu(x)
+            x = self.c5(x)
+        elif self.mode is 3:
+            x = self.c1(x)
+            x = F.relu(x)
+            x = self.c2(x)
+            x = F.relu(x)
+            x = self.c3(x)
 
         if self.vis_period > 0:
             if self.i % 100 == 0 and x.size()[0] > 0:
