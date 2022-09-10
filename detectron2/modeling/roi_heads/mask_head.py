@@ -873,7 +873,10 @@ class Parallel_Amodal_Visible_Head(nn.Module):
                         depth = instances[0].depth[i].cpu().detach()[0].numpy()
                         depth = (depth - np.min(depth)) / (np.max(depth) - np.min(depth))
                         visible_depths = depth[visible_mask]
-                        mean_depth = np.mean(visible_depths)
+                        if len(visible_depths) <= 0:
+                            mean_depth = 0
+                        else:
+                            mean_depth = np.mean(visible_depths)
                         normalized_depth = depth - mean_depth
                         if False:
                             features = instances[0].features[i].cpu().detach()[0].numpy()
