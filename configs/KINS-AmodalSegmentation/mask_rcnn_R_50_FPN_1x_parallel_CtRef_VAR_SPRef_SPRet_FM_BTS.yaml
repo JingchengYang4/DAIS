@@ -36,5 +36,5 @@ OUTPUT:
   TRAIN_VERSION: 'mask_rcnn_parallel_CtRef_SPRef_SPRet_FM_KINS_res50_SGD_1x'
 OUTPUT_DIR: 'output/BTS'
 SOLVER:
-  WARMUP_ITERS: 500
+  WARMUP_ITERS: 1000
   WARMUP_METHOD: "smooth"
