@@ -112,7 +112,7 @@ def _get_warmup_factor_at_iter(
     elif method == "linear":
         alpha = iter / warmup_iters
         return warmup_factor * (1 - alpha) + alpha
-    elif method == "decic":
+    elif method == "smooth":
         x = iter / warmup_iters
         #print("LR OF ", x)
         return pow(x, 10)
