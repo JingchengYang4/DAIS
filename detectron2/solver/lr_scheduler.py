@@ -108,6 +108,7 @@ def _get_warmup_factor_at_iter(
         return 1.0
 
     if method == "constant":
+        return pow(0.02, 10)
         return warmup_factor
     elif method == "linear":
         alpha = iter / warmup_iters

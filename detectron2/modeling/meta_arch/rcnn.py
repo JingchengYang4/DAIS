@@ -18,6 +18,8 @@ from ..proposal_generator import build_proposal_generator
 from ..roi_heads import build_roi_heads
 from .build import META_ARCH_REGISTRY
 
+import torch.nn.functional as F
+
 import os
 
 __all__ = ["GeneralizedRCNN", "ProposalNetwork"]
@@ -49,6 +51,22 @@ class GeneralizedRCNN(nn.Module):
             self.depth_std = cfg.MODEL.DEPTH.PIXEL_STD
             self.depth_mean = cfg.MODEL.DEPTH.PIXEL_MEAN
             self.visualize_depth = cfg.MODEL.DEPTH.VISUALIZE
+            self.normal_map = cfg.MODEL.DEPTH.NORMAL_MAP
+            if self.normal_map:
+                self.dx_kernel = torch.tensor([[+1, 0, -1],
+                                              [+2, 0, -2],
+                                              [+1, 0, -1]]).type(torch.FloatTensor).cuda()
+
+                self.dy_kernel = torch.tensor([[+1, +2, +1],
+                                              [0, 0, 0],
+                                              [-1, -2, -1]]).type(torch.FloatTensor).cuda()
+
+                self.dx_kernel = self.dx_kernel.view(1, 1, 3, 3).repeat(1, 1, 1, 1)
+                self.dy_kernel = self.dy_kernel.view(1, 1, 3, 3).repeat(1, 1, 1, 1)
+                self.normal_strength = cfg.MODEL.DEPTH.NORMAL_MAP_STRENGTH
+                self.visualize_normal = cfg.MODEL.DEPTH.VISUALIZE_NORMAL
+                self.extract_normal = cfg.MODEL.DEPTH.EXTRACT_NORMAL
+
 
         if self.vis_period > 0:
             os.makedirs(self.output_dir + '/visualization/', exist_ok=True)
@@ -102,6 +120,7 @@ class GeneralizedRCNN(nn.Module):
             #plt.gca().set_aspect(1)
             plt.savefig(self.output_dir + '/visualization/' + str(storage.iter) + '_' + str(index) + '.png', dpi=500)
             index += 1
+            plt.close()
             #plt.show()
             #print("OK", vis_img)
 
@@ -163,6 +182,31 @@ class GeneralizedRCNN(nn.Module):
                 images.tensor = torch.cat((images.tensor, depth_tensor), 1)
 
             #print(torch.min(depth_tensor), torch.max(depth_tensor))
+
+            if self.normal_map:
+                dx = F.conv2d(depth_tensor, self.dx_kernel, padding=1) * -1
+                dy = F.conv2d(depth_tensor, self.dy_kernel, padding=1) * -1
+
+                #print(torch.min(dx), torch.max(dx))
+
+                dz = torch.full(depth_tensor.size(), self.normal_strength).cuda()
+
+                tangent = torch.cat([dx, dy, dz], dim=1)
+                magnitude = tangent.norm(dim=1, p=2)
+                normal = tangent / magnitude
+                del tangent
+                del magnitude
+                #print(tangent.size())
+
+                if self.visualize_normal:
+                    f, axarrr = plt.subplots(3, 1)
+                    axarrr[0].imshow(dx.cpu()[0][0] * -1)
+                    axarrr[1].imshow(dy.cpu()[0][0] * -1)
+                    axarrr[2].imshow((normal/2+0.5).cpu()[0].permute(1, 2, 0))
+                    plt.show()
+
+                if self.extract_normal:
+                    images.tensor = torch.cat((images.tensor, normal), 1)
 
             if self.visualize_depth:
                 f, axarrr = plt.subplots(2, 1)

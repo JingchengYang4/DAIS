@@ -124,5 +124,6 @@ class Edge_Occlusion(nn.Module):
                 axarrr[1].imshow(gt[0][0].cpu().detach().numpy())
                 #plt.show()
                 plt.savefig(self.output_dir + '/visualization/OE_' + str(self.i) + '.png', dpi=800)
+                plt.close(f)
             self.i += 1
         return oe_loss, x

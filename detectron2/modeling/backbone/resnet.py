@@ -422,6 +422,9 @@ def build_resnet_backbone(cfg, input_shape):
     if cfg.MODEL.DEPTH.EXTRACT_FEATURES:
         in_channels += 1
 
+    if cfg.MODEL.DEPTH.EXTRACT_NORMAL:
+        in_channels += 3
+
     stem = BasicStem(
         in_channels=in_channels,
         out_channels=cfg.MODEL.RESNETS.STEM_OUT_CHANNELS,
