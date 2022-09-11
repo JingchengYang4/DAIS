@@ -39,7 +39,8 @@ class Edge_Occlusion(nn.Module):
 
             self.fconv = nn.Conv2d(in_channels=8, out_channels=1, kernel_size=1)
         elif self.mode is 2:
-            self.c1 = nn.Conv2d(in_channels=2, out_channels=64, kernel_size=3, stride=1, padding=1)
+            self.c1 = nn.Conv2d(in_channels=2, out_channels=128, kernel_size=3, stride=1, padding=1)
+            self.c1_5 = nn.Conv2d(in_channels=128, out_channels=64, kernel_size=3, stride=1, padding=1)
             self.c2 = nn.Conv2d(in_channels=64, out_channels=32, kernel_size=3, stride=1, padding=1)
             self.c3 = nn.Conv2d(in_channels=32, out_channels=16, kernel_size=3, stride=1, padding=1)
             self.c4 = nn.Conv2d(in_channels=16, out_channels=8, kernel_size=3, stride=1, padding=1)
@@ -94,6 +95,8 @@ class Edge_Occlusion(nn.Module):
             x = self.fconv(x)
         elif self.mode is 2:
             x = self.c1(x)
+            x = F.relu(x)
+            x = self.c1_5(x)
             x = F.relu(x)
             x = self.c2(x)
             x = F.relu(x)
