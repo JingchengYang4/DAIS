@@ -193,8 +193,8 @@ class SimpleTrainer(TrainerBase):
 
         self.apply_adv = isinstance(optimizer, list)
         self.model = model
-        print("Model is", self.model)
-        quit()
+        #print("Model is", self.model)
+        #quit()
         self.data_loader = data_loader
         self._data_loader_iter = iter(data_loader)
         if self.apply_adv:
