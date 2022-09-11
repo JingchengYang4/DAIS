@@ -114,7 +114,7 @@ def _get_warmup_factor_at_iter(
         return warmup_factor * (1 - alpha) + alpha
     elif method == "decic":
         x = iter / warmup_iters
-        print("LR OF ", x)
+        #print("LR OF ", x)
         return pow(x, 10)
     else:
         raise ValueError("Unknown warmup method: {}".format(method))
