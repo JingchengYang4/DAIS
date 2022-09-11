@@ -218,6 +218,7 @@ class SimpleTrainer(TrainerBase):
         """
         loss_dict = self.model(data)
 
+        print(loss_dict['loss_cls'])
         #print(loss_dict['loss_oe'])
 
         metrics_dict = loss_dict

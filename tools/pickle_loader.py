@@ -1,5 +1,6 @@
 import pickle
 from detectron2.checkpoint.c2_model_loading import *
+import torch
 
 resnet = []
 
