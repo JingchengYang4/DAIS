@@ -9,3 +9,7 @@ python tools/train_net.py --config-file configs/KINS-DAIS/DAIS_Rgb_NormalLarge_I
 python tools/train_net.py --config-file configs/KINS-DAIS/DAIS_Rgb_Depth_IG.yaml
 
 python tools/train_net.py --config-file configs/KINS-DAIS/DAIS_Rgb_Normal_Depth_IG.yaml
+
+python tools/train_net.py --config-file configs/KINS-DAIS/DAIS_Rgb_Depth_RAN.yaml
+
+python tools/train_net.py --config-file configs/KINS-DAIS/DAIS_Rgb_DepthN_RAN.yaml
