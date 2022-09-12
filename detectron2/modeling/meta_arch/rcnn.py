@@ -161,31 +161,7 @@ class GeneralizedRCNN(nn.Module):
             gt_instances = None
 
         if self.predict_depth:
-            image = torch.flip(images.tensor, [1])#switches bgr to rgb
-            image -= torch.min(image)#recenter RGB to 0-255
-            image /= 255
-            depth = self.depth_predictor.Predict(image)
-            depth = np.log10(depth)
-            depth_tensor = torch.tensor([[depth]]).cuda()
-            depth_tensor = (depth_tensor - torch.mean(depth_tensor)) / torch.std(depth_tensor)
-            if self.extract_depth:
-                images.tensor = torch.cat((images.tensor, depth_tensor), 1)
-
-            #print(torch.min(depth_tensor), torch.max(depth_tensor))
-
-            if self.normal_map:
-                normal = self.tangent.get_normals(depth_tensor)
-
-                if self.extract_normal:
-                    images.tensor = torch.cat((images.tensor, normal), 1)
-
-            if self.visualize_depth:
-                f, axarrr = plt.subplots(2, 1)
-                axarrr[0].imshow(image.cpu()[0].permute(1, 2, 0))
-                #print(depth, type(depth))
-                axarrr[1].imshow(depth)
-                plt.show()
-                #quit()
+            images.tensor, depths = self.depth(images.tensor)
 
         #print("STUFF I GUESS")
 
@@ -203,7 +179,7 @@ class GeneralizedRCNN(nn.Module):
         #print(self.roi_heads)
         #roi head shere
         if self.predict_depth:
-            _, detector_losses = self.roi_heads(images, features, proposals, gt_instances, depth=depth_tensor)
+            _, detector_losses = self.roi_heads(images, features, proposals, gt_instances, depth=depths[0])
         else:
             _, detector_losses = self.roi_heads(images, features, proposals, gt_instances)
 
@@ -216,6 +192,37 @@ class GeneralizedRCNN(nn.Module):
         losses.update(detector_losses)
         losses.update(proposal_losses)
         return losses
+
+    def depth(self, images):
+        image = torch.flip(images, [1])#switches bgr to rgb
+        image -= torch.min(image)#recenter RGB to 0-255
+        image /= 255
+        depth = self.depth_predictor.Predict(image)
+        depth = np.log10(depth)
+        depth_tensor = torch.tensor([[depth]]).cuda()
+        depth_tensor = (depth_tensor - torch.mean(depth_tensor)) / torch.std(depth_tensor)
+        if self.extract_depth:
+            images = torch.cat((images, depth_tensor), 1)
+
+        #print(torch.min(depth_tensor), torch.max(depth_tensor))
+        output = [depth_tensor]
+
+        if self.normal_map:
+            normal = self.tangent.get_normals(depth_tensor)
+            output.append(normal)
+
+            if self.extract_normal:
+                images = torch.cat((images, normal), 1)
+
+        if self.visualize_depth:
+            f, axarrr = plt.subplots(2, 1)
+            axarrr[0].imshow(image.cpu()[0].permute(1, 2, 0))
+            #print(depth, type(depth))
+            axarrr[1].imshow(depth)
+            plt.show()
+            #quit()
+
+        return images, output
 
     def inference(self, batched_inputs, detected_instances=None, do_postprocess=True):
         """
@@ -236,6 +243,10 @@ class GeneralizedRCNN(nn.Module):
         """
         assert not self.training
         images = self.preprocess_image(batched_inputs)
+
+        if self.predict_depth:
+            images.tensor, output = self.depth(images.tensor)
+
         features = self.backbone(images.tensor)
         if detected_instances is None:
             if self.proposal_generator:
