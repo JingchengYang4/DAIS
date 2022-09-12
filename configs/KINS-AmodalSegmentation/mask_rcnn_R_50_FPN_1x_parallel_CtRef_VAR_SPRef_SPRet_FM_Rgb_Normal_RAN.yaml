@@ -41,3 +41,6 @@ TEST:
 OUTPUT:
   TRAIN_VERSION: 'mask_rcnn_parallel_CtRef_SPRef_SPRet_FM_KINS_res50_SGD_1x'
 OUTPUT_DIR: 'output/RGB_NORMAL_RAN'
+SOLVER:
+  WARMUP_ITERS: 200
+  WARMUP_METHOD: "smooth"
