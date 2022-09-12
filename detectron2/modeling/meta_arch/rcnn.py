@@ -13,6 +13,7 @@ from detectron2.utils.visualizer import Visualizer
 
 from ..backbone import build_backbone
 from detectron2.modeling.backbone.depth_prediction import DepthPredictionModule
+from ..backbone.tangent import Tangent
 from ..postprocessing import detector_postprocess
 from ..proposal_generator import build_proposal_generator
 from ..roi_heads import build_roi_heads
@@ -53,18 +54,7 @@ class GeneralizedRCNN(nn.Module):
             self.visualize_depth = cfg.MODEL.DEPTH.VISUALIZE
             self.normal_map = cfg.MODEL.DEPTH.NORMAL_MAP
             if self.normal_map:
-                self.dx_kernel = torch.tensor([[+1, 0, -1],
-                                              [+2, 0, -2],
-                                              [+1, 0, -1]]).type(torch.FloatTensor).cuda()
-
-                self.dy_kernel = torch.tensor([[+1, +2, +1],
-                                              [0, 0, 0],
-                                              [-1, -2, -1]]).type(torch.FloatTensor).cuda()
-
-                self.dx_kernel = self.dx_kernel.view(1, 1, 3, 3).repeat(1, 1, 1, 1)
-                self.dy_kernel = self.dy_kernel.view(1, 1, 3, 3).repeat(1, 1, 1, 1)
-                self.normal_strength = cfg.MODEL.DEPTH.NORMAL_MAP_STRENGTH
-                self.visualize_normal = cfg.MODEL.DEPTH.VISUALIZE_NORMAL
+                self.tangent = Tangent(cfg)
                 self.extract_normal = cfg.MODEL.DEPTH.EXTRACT_NORMAL
 
 
@@ -184,26 +174,7 @@ class GeneralizedRCNN(nn.Module):
             #print(torch.min(depth_tensor), torch.max(depth_tensor))
 
             if self.normal_map:
-                dx = F.conv2d(depth_tensor, self.dx_kernel, padding=1) * -1
-                dy = F.conv2d(depth_tensor, self.dy_kernel, padding=1) * -1
-
-                #print(torch.min(dx), torch.max(dx))
-
-                dz = torch.full(depth_tensor.size(), self.normal_strength).cuda()
-
-                tangent = torch.cat([dx, dy, dz], dim=1)
-                magnitude = tangent.norm(dim=1, p=2)
-                normal = tangent / magnitude
-                del tangent
-                del magnitude
-                #print(tangent.size())
-
-                if self.visualize_normal:
-                    f, axarrr = plt.subplots(3, 1)
-                    axarrr[0].imshow(dx.cpu()[0][0] * -1)
-                    axarrr[1].imshow(dy.cpu()[0][0] * -1)
-                    axarrr[2].imshow((normal/2+0.5).cpu()[0].permute(1, 2, 0))
-                    plt.show()
+                normal = self.tangent.get_normals(depth_tensor)
 
                 if self.extract_normal:
                     images.tensor = torch.cat((images.tensor, normal), 1)
