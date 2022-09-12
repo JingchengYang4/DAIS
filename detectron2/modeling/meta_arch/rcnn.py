@@ -233,7 +233,7 @@ class GeneralizedRCNN(nn.Module):
         if self.extract_depth:
             if self.normalize_depth:
                 images = torch.cat((images, norm_depths), 1)
-                print(images.size())
+                #print(images.size())
             else:
                 images = torch.cat((images, depth_tensor), 1)
 
