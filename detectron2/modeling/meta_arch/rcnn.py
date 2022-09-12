@@ -233,6 +233,7 @@ class GeneralizedRCNN(nn.Module):
         if self.extract_depth:
             if self.normalize_depth:
                 images = torch.cat((images, norm_depths), 1)
+                print(images.size())
             else:
                 images = torch.cat((images, depth_tensor), 1)
 
@@ -254,8 +255,8 @@ class GeneralizedRCNN(nn.Module):
             #quit()
 
         if self.no_rgb:
-            images = images[:, :3, :, :]
-
+            images = images[:, 3:, :, :]
+        #print(images.size())
         return images, output
 
     def inference(self, batched_inputs, detected_instances=None, do_postprocess=True):
