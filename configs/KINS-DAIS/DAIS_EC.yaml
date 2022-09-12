@@ -42,5 +42,5 @@ MODEL:
 TEST:
   EVAL_AMODAL_TYPE: "AMODAL_VISIBLE"
 OUTPUT:
-  TRAIN_VERSION: 'mask_rcnn_parallel_CtRef_SPRef_SPRet_FM_KINS_res50_SGD_1x'
+  TRAIN_VERSION: 'DAIS'
 OUTPUT_DIR: 'output/Rgb-EdgeOcclusion'

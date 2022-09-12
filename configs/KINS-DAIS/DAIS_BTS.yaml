@@ -1,19 +1,11 @@
 _BASE_: "../Base-RCNN-FPN-KINS.yaml"
-VIS_PERIOD: 300
 MODEL:
+  WEIGHTS: "models/bts_res50_mod.pkl"
   MASK_ON: True
-  DEPTH:
-    PREDICT: True
-    EDGE_OCCLUSION: True
-    POOLING: True
-    VISUALIZE: False
-    EO_MODE: 2
   RESNETS:
     DEPTH: 50
   ROI_HEADS:
     NAME: "Parallel_Amodal_Visible_ROIHeads"
-  BACKBONE:
-    FREEZE_AT: 0
   ROI_MASK_HEAD:
     NAME: "Parallel_Amodal_Visible_Head"
     VERSION: 3
@@ -38,9 +30,12 @@ MODEL:
       LOAD_CODEBOOK: True
       MEMORY_REFINE: True
       MEMORY_REFINE_K: 16
-
 TEST:
   EVAL_AMODAL_TYPE: "AMODAL_VISIBLE"
 OUTPUT:
-  TRAIN_VERSION: 'mask_rcnn_parallel_CtRef_SPRef_SPRet_FM_KINS_res50_SGD_1x'
-OUTPUT_DIR: 'output/Depth-EdgeOcclusion2'
+  TRAIN_VERSION: 'DAIS'
+OUTPUT_DIR: 'output/RGB_BTS'
+SOLVER:
+  WARMUP_ITERS: 10000
+  WARMUP_METHOD: "smooth"
+  WARMUP_FACTOR: 0.0000001
