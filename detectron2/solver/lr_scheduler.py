@@ -115,7 +115,8 @@ def _get_warmup_factor_at_iter(
         return warmup_factor * (1 - alpha) + alpha
     elif method == "smooth":
         x = iter / warmup_iters
+        x /= 2
         #print("LR OF ", x)
-        return pow(x, 10) * 0.5
+        return pow(x, 10)
     else:
         raise ValueError("Unknown warmup method: {}".format(method))
