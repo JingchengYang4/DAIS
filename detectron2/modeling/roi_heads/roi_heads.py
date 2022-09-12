@@ -884,7 +884,11 @@ class Parallel_Amodal_Visible_ROIHeads(ROIHeads):
         else:
             if (self._cfg.MODEL.ROI_MASK_HEAD.RECON_NET.NAME != "" or self._cfg.MODEL.ROI_MASK_HEAD.RECLS_NET.NAME != "")\
                     and not self.inference_embedding:
-                pred_instances = self._forward_box_and_mask_inference(features, proposals)
+
+                if self.depth_pooling:
+                    pred_instances = self._forward_box_and_mask_inference(features, proposals, self.depth_list)
+                else:
+                    pred_instances = self._forward_box_and_mask_inference(features, proposals)
             else:
                 pred_instances = self._forward_box(features_list, proposals)
                 # During inference cascaded prediction is used: the mask and keypoints heads are only
@@ -1000,14 +1004,16 @@ class Parallel_Amodal_Visible_ROIHeads(ROIHeads):
                 #Yeah so great beause depth is already being send
                 if depth_list is not None:
                     mask_logits, features, occlusion = self.mask_head(mask_features, proposals)
-                    losses.update({"loss_oe": occlusion[0]})
-                    occlusion_edge = occlusion[1]
+                    losses.update({"loss_eo": occlusion[0]})
+                    losses.update({"loss_or": occlusion[2]})
+                    #occlusion_edge = occlusion[1]
                 else:
                     mask_logits, features = self.mask_head(mask_features, proposals)  # num_boxes*1*28*28
                 #print(features[0][0].size())
                 losses.update({"loss_fm": mask_fm_loss(features, self._cfg.MODEL.ROI_MASK_HEAD.AMODAL_FM_BETA)})
             else:
                 mask_logits, _ = self.mask_head(mask_features, proposals)  # num_boxes*1*28*28
+
             losses.update({"loss_amask": amodal_mask_rcnn_loss(
                 mask_logits[0][0], proposals, mode="amodal", version="n")})
             losses.update({"loss_vmask": amodal_mask_rcnn_loss(
@@ -1058,7 +1064,13 @@ class Parallel_Amodal_Visible_ROIHeads(ROIHeads):
 
         else:
             pred_boxes = [x.pred_boxes for x in instances]
-            mask_features = self.mask_pooler(features, pred_boxes)
+            if depth_list is not None:
+                #print("IS NOT NONE")
+                mask_features, mask_depths = self.mask_pooler(features, pred_boxes, depth_list)  # num_boxes*256*14*14
+                instances[0].set('depth', mask_depths)
+            else:
+                mask_features = self.mask_pooler(features, pred_boxes)
+
             mask_logits, _ = self.mask_head(mask_features, instances)
 
             amodal_mask_rcnn_inference(mask_logits, instances)
@@ -1069,7 +1081,7 @@ class Parallel_Amodal_Visible_ROIHeads(ROIHeads):
 
             return instances
 
-    def _forward_box_and_mask_inference(self, features, proposals):
+    def _forward_box_and_mask_inference(self, features, proposals, depth_list=None):
         """
         Forward logic of the box and mask prediction branch together in inference with reconstruction net
                 "gt_classes", "gt_boxes".
@@ -1098,10 +1110,13 @@ class Parallel_Amodal_Visible_ROIHeads(ROIHeads):
             self.test_score_thresh, self.test_nms_thresh, self.test_detections_per_img,
             targets=self.targets if self.inference_embedding else None, mask_pooler=self.mask_pooler
             , mask_head=self.mask_head, features=features_list, recon_net=self.recon_net,
-            recon_alpha=self.recon_alpha, recls=self.recls
+            recon_alpha=self.recon_alpha, recls=self.recls, depth_list=depth_list
         )
 
-        pred_instances = self._forward_mask(features_list, pred_instances)
+        if depth_list is None:
+            pred_instances = self._forward_mask(features_list, pred_instances)
+        else:
+            pred_instances = self._forward_mask(features_list, pred_instances, depth_list)
         return pred_instances
 
     def add_ground_truth_for_inference_embedding(self, instances):
@@ -1469,4 +1484,3 @@ and the occlusion mask (occlusion mask head).
         instances, visible_mask_logits = self._forward_visible_mask(features_list, instances)
         instances = self._forward_invisible_mask(amodal_mask_logits, visible_mask_logits, instances)
         return instances
-#%%

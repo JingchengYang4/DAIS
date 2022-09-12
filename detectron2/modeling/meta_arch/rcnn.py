@@ -291,8 +291,12 @@ class GeneralizedRCNN(nn.Module):
                 proposals = [x["proposals"].to(self.device) for x in batched_inputs]
 
             gt_instances = [x["inference_instances"].to(self.device) for x in batched_inputs]
-            results, _ = self.roi_heads(images, features, proposals, gt_instances)
+            if self.predict_depth:
+                results, _ = self.roi_heads(images, features, proposals, gt_instances, depth=output[0])
+            else:
+                results, _ = self.roi_heads(images, features, proposals, gt_instances)
             # results, _ = self.roi_heads(images, features, proposals, None)
+            #so inference is here then
         else:
             detected_instances = [x.to(self.device) for x in detected_instances]
             results = self.roi_heads.forward_with_given_boxes(features, detected_instances)

@@ -70,6 +70,10 @@ class DatasetFromList(data.Dataset):
         """
         self._lst = lst
         self._copy = copy
+        #for k in lst:
+        #    print(k['file_name'])
+        #get the list here
+        #quit()
 
     def __len__(self):
         return len(self._lst)
