@@ -54,6 +54,11 @@ class GeneralizedRCNN(nn.Module):
             self.depth_mean = cfg.MODEL.DEPTH.PIXEL_MEAN
             self.visualize_depth = cfg.MODEL.DEPTH.VISUALIZE
             self.normal_map = cfg.MODEL.DEPTH.NORMAL_MAP
+            self.normalize_depth = cfg.MODEL.DEPTH.NORMALIZE_DEPTH
+            if self.normalize_depth:
+                self.norm_step = cfg.MODEL.DEPTH.NORMALIZE_STEP
+                self.offsets = cfg.MODEL.DEPTH.NORMALIZE_SUB
+                self.visualize_depth_norm = cfg.MODEL.DEPTH.VISUALIZE_DEPTH_NORM
             if self.normal_map:
                 self.tangent = Tangent(cfg)
                 self.extract_normal = cfg.MODEL.DEPTH.EXTRACT_NORMAL
@@ -203,11 +208,35 @@ class GeneralizedRCNN(nn.Module):
         depth_tensor = torch.tensor([[depth]]).cuda()
         depth_tensor = (depth_tensor - torch.mean(depth_tensor)) / torch.std(depth_tensor)
 
-        if self.extract_depth:
-            images = torch.cat((images, depth_tensor), 1)
-
         #print(torch.min(depth_tensor), torch.max(depth_tensor))
         output = [depth_tensor]
+
+        if self.normalize_depth:
+            norm_depths = depth_tensor
+            for i in range(1, self.offsets): #0, 1, 2, 3
+                offset = i * (1/self.offsets) * self.norm_step
+                norm_depths = torch.cat((norm_depths, depth_tensor+offset), 1)
+
+            depth_norm = norm_depths/self.norm_step
+            depth_norm = (depth_norm - (torch.sin(2 * 3.1415926 * depth_norm))/(2 * 3.1415926)) * self.norm_step
+
+            norm_depths -= depth_norm
+
+            if self.visualize_depth_norm:
+                f, axarrr = plt.subplots(self.offsets, 1)
+                for i in range(0, self.offsets):
+                    axarrr[i].imshow(norm_depths[0][i].cpu())
+                plt.show()
+
+            output.append(norm_depths)
+
+        if self.extract_depth:
+            if self.normalize_depth:
+                images = torch.cat((images, norm_depths), 1)
+            else:
+                images = torch.cat((images, depth_tensor), 1)
+
+        #print(torch.min(depth_tensor), torch.max(depth_tensor))
 
         if self.normal_map:
             normal = self.tangent.get_normals(depth_tensor)
@@ -220,7 +249,7 @@ class GeneralizedRCNN(nn.Module):
             f, axarrr = plt.subplots(2, 1)
             axarrr[0].imshow(image.cpu()[0].permute(1, 2, 0))
             #print(depth, type(depth))
-            axarrr[1].imshow(depth)
+            axarrr[1].imshow(depth_tensor.cpu()[0][0])
             plt.show()
             #quit()
 

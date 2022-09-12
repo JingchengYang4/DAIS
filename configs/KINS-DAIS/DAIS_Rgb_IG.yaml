@@ -1,5 +1,5 @@
 _BASE_: "../Base-RCNN-FPN-KINS.yaml"
-VIS_PERIOD: 500
+#VIS_PERIOD: 500
 MODEL:
   MASK_ON: True
   RESNETS:

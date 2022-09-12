@@ -423,6 +423,8 @@ def build_resnet_backbone(cfg, input_shape):
         in_channels -= 3
 
     if cfg.MODEL.DEPTH.EXTRACT_FEATURES:
+        if cfg.MODEL.DEPTH.NORMALIZE_DEPTH:
+            in_channels += (cfg.MODEL.DEPTH.NORMALIZE_SUB - 1)
         in_channels += 1
 
     if cfg.MODEL.DEPTH.EXTRACT_NORMAL:
