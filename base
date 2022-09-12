@@ -1,1 +1,7 @@
+
+
+
+
 python tools/train_net.py --config-file configs/KINS-DAIS/DAIS_Rgb_Normal_IG.yaml --eval-only MODEL.WEIGHTS 'output/RGB_NORMAL_IG/mask_rcnn_parallel_CtRef_SPRef_SPRet_FM_KINS_res50_SGD_1x/model_final.pth'
+
+python tools/train_net.py --config-file configs/KINS-DAIS/DAIS_Rgb_NormalLarge_IG.yaml
