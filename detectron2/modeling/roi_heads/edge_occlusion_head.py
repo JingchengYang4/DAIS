@@ -57,7 +57,8 @@ class Edge_Occlusion(nn.Module):
             self.i = 0
             os.makedirs(self.output_dir + '/visualization/', exist_ok=True)
 
-    def forward(self, depth, gt, visible=None):
+
+    def forward(self, depth, visible, gt=None):
 
         x = torch.cat((depth, visible), 1)
 
@@ -112,10 +113,11 @@ class Edge_Occlusion(nn.Module):
             x = F.relu(x)
             x = self.c3(x)
 
-
-        oe_loss = self.loss(x, gt)
-
-        x = torch.sigmoid(x)
+        if gt is not None:
+            oe_loss = self.loss(x, gt)
+        else:
+            x = torch.sigmoid(x)
+            return x
 
         if self.vis_period > 0:
             if self.i % 100 == 0 and x.size()[0] > 0:

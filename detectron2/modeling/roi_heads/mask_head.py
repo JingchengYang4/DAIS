@@ -16,6 +16,8 @@ from detectron2.structures import Instances
 from detectron2.layers import Conv2d, ConvTranspose2d, ShapeSpec, cat, get_norm
 from detectron2.utils.events import get_event_storage
 from detectron2.utils.registry import Registry
+from .occlusion_refinement_head import Occlusion_Refinement
+
 ROI_MASK_HEAD_REGISTRY = Registry("ROI_MASK_HEAD")
 ROI_MASK_HEAD_REGISTRY.__doc__ = """
 Registry for mask heads, which predicts instance masks given
@@ -657,6 +659,7 @@ class Parallel_Amodal_Visible_Head(nn.Module):
         self.edge_occlusion = cfg.MODEL.DEPTH.EDGE_OCCLUSION
         if self.edge_occlusion:
             self.eo_head = Edge_Occlusion(cfg)
+            self.or_head = Occlusion_Refinement(cfg)
 
         # fmt: on
 
@@ -735,7 +738,7 @@ class Parallel_Amodal_Visible_Head(nn.Module):
                 padding=1
             )
 
-    def forward(self, x, instances=None, depths=None):
+    def forward(self, x, instances=None):
         output_mask_logits = []
         output_feature = []
         masks_logits, feature_maps = self.forward_through(x, x)
@@ -751,8 +754,6 @@ class Parallel_Amodal_Visible_Head(nn.Module):
         #print("MY CURRENT VERSION IS ", self.version)
         #We can confirm that spref is enabled as the config contains such said code
         #Version is 3 for that config
-
-
 
         if self.version == 1:
             amodal_attention = self.amodal_pool(classes_choose(masks_logits[0], instances)).unsqueeze(1).sigmoid()
@@ -820,6 +821,30 @@ class Parallel_Amodal_Visible_Head(nn.Module):
             visible_attention = (self.visible_pool(classes_choose(visible_masks_logits_, instances)).unsqueeze(1) > 0).float() \
                 if self.attention_mode == "mask" else self.visible_pool(classes_choose(visible_masks_logits_, instances)).unsqueeze(1).sigmoid()
 
+            if not instances[0].has("gt_masks") and self.edge_occlusion:
+                va = visible_attention * 1.0
+                valid_depths = instances[0].depth * va
+
+                d_sum = torch.sum(valid_depths, dim=(2, 3))
+                v_sum = torch.sum(va, dim=(2, 3))
+
+                mean = torch.div(d_sum, v_sum)
+                normalized_depths = instances[0].depth
+
+                mean = mean.unsqueeze(1).unsqueeze(1)
+
+                normalized_depths = normalized_depths - mean
+
+                occlusion = self.eo_head.forward(normalized_depths, va) # this isessentialyl the amodal attention from occlusoin
+
+                amodal_attention = self.or_head.forward(amodal_attention, occlusion)
+
+
+            #if self.edge_occlusion:
+                #so basically we get the amodal attention from eo head, then we combine this with the other one through or refinement phase
+
+                #self.eo_head.forward(nd_tensor, visible_attention*1.0)#, instances[0].features)
+
             if self.SPRef:
                 pred_amodal_masks = classes_choose(masks_logits[0], instances).unsqueeze(1)
 
@@ -851,78 +876,46 @@ class Parallel_Amodal_Visible_Head(nn.Module):
                         plt.imshow(mask[0].cpu().detach().numpy())
                         plt.show()
 
-
             if instances[0].has("gt_masks"):
                 mask_side_len = x.size(2)
-                #print("MASK SIDE LENGTHS", mask_side_len)
-                #print(len(instances))
-                #print(instances[0].depth.size())
-                amodal_attention, visible_attention = get_gt_masks(instances, mask_side_len, masks_logits)
-
-                #print("AMODAL MASK", amodal_attention.size())
-                #print("AMODAL PREDICTION", masks_logits[0].size())
+                amodal_attention_gt, visible_attention_gt = get_gt_masks(instances, mask_side_len, masks_logits)
 
                 if self.edge_occlusion:
-                    normalized_depths = []
-                    occlusion_gt = []
-                    visible_masks = []
+                    va = visible_attention_gt * 1.0
+                    valid_depths = instances[0].depth * va
 
-                    for i in range(len(amodal_attention)):
-                        amodal_mask = amodal_attention[i].cpu().detach()[0].numpy()
-                        visible_mask = visible_attention[i].cpu().detach()[0].numpy()
-                        dif = np.logical_xor(amodal_mask, visible_mask)
-                        depth = instances[0].depth[i].cpu().detach()[0].numpy()
-                        depth = (depth - np.min(depth)) / (np.max(depth) - np.min(depth))
-                        visible_depths = depth[visible_mask]
-                        if len(visible_depths) <= 0:
-                            mean_depth = 0
-                        else:
-                            mean_depth = np.mean(visible_depths)
-                        normalized_depth = depth - mean_depth
-                        if False:
-                            features = instances[0].features[i].cpu().detach()[0].numpy()
-                            f, axarrr = plt.subplots(1, 6)
-                            axarrr[0].imshow(visible_mask)
-                            axarrr[1].imshow(amodal_mask)
-                            axarrr[2].imshow(dif)
-                            axarrr[3].imshow(depth)
-                            axarrr[4].imshow(normalized_depth)
-                            axarrr[5].imshow(features)
-                            plt.show()
+                    d_sum = torch.sum(valid_depths, dim=(2, 3))
+                    v_sum = torch.sum(va, dim=(2, 3))
 
-                        #print(torch.unsqueeze(torch.tensor(normalized_depth), 0).size())
-                        normalized_depths.append(torch.unsqueeze(torch.tensor(normalized_depth), 0))
-                        #occlusion_gt.append(torch.unsqueeze(torch.tensor(dif*1), 0))
-                        occlusion_gt.append(torch.unsqueeze(torch.tensor(amodal_mask*1), 0))
-                        visible_masks.append(torch.unsqueeze(torch.tensor(visible_mask*1), 0))
+                    mean = torch.div(d_sum, v_sum)
+                    normalized_depths = instances[0].depth
 
-                    nd_tensor = torch.stack(normalized_depths, 0).cuda().to(masks_logits[0].device)
-                    og_tensor = torch.stack(occlusion_gt, 0).float().cuda().to(masks_logits[0].device)
-                    vs_tensor = torch.stack(visible_masks, 0).float().cuda().to(masks_logits[0].device)
-                    #print(og_tensor.size())
+                    mean = mean.unsqueeze(1).unsqueeze(1)
 
-                    eo_loss, occlusion = self.eo_head.forward(nd_tensor, og_tensor, vs_tensor)#, instances[0].features)
+                    normalized_depths = normalized_depths - mean
 
-                #We believe the first dimensoin of amodal masks is each shape?
+                    eo_loss, occlusion = self.eo_head.forward(normalized_depths, va, amodal_attention_gt*1.0)
 
-                #so mask logits is amodal + visible masks
-                #then we have amodal and visible attention so...
-
+                    or_loss = self.or_head.forward(amodal_attention*1.0, occlusion, amodal_attention_gt*1.0)
 
                 if self.SPRef:
                     amodal_masks_logits_, amodal_feature_maps_ = self.single_head_forward(
-                        self.fuse_layer(cat([x * visible_attention, shape_prior], dim=1)), "amodal")
+                        self.fuse_layer(cat([x * visible_attention_gt, shape_prior], dim=1)), "amodal")
                 else:
-                    amodal_masks_logits_, amodal_feature_maps_ = self.single_head_forward(x * visible_attention, "amodal")
-                visible_masks_logits_, visible_feature_maps_ = self.single_head_forward(x * amodal_attention, "visible")
+                    amodal_masks_logits_, amodal_feature_maps_ = self.single_head_forward(x * visible_attention_gt, "amodal")
+                visible_masks_logits_, visible_feature_maps_ = self.single_head_forward(x * amodal_attention_gt, "visible")
+
+                """if instances[0].has("gt_masks"):
+                    print(visible_attention.size())
+                    or_loss, amodal_masks_logits_ = self.or_head(amodal_masks_logits_, occlusion, amodal_attention)"""
 
                 output_mask_logits.append([amodal_masks_logits_, visible_masks_logits_])
 
                 #print(visible_masks_logits_[0].size())
 
                 output_feature.append(amodal_feature_maps_ + visible_feature_maps_)
-        if self.edge_occlusion:
-            return output_mask_logits, output_feature, [eo_loss, occlusion]
+        if self.edge_occlusion and instances[0].has("gt_masks"):
+            return output_mask_logits, output_feature, [eo_loss, occlusion, or_loss]
         else:
             return output_mask_logits, output_feature
 

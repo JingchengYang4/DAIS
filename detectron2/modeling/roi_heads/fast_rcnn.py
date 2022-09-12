@@ -83,7 +83,7 @@ def get_similarity(pred_masks, recon_net, filter_inds, metric="l1", post_process
 
 
 def fast_rcnn_inference(boxes, scores, image_shapes, score_thresh, nms_thresh, topk_per_image,
-                        mask_pooler=None, mask_head=None, recon_net=None, features=None, recon_alpha=None, recls=None):
+                        mask_pooler=None, mask_head=None, recon_net=None, features=None, recon_alpha=None, recls=None, depth_list=None):
     """
     Call `fast_rcnn_inference_single_image` for all images.
 
@@ -114,7 +114,7 @@ def fast_rcnn_inference(boxes, scores, image_shapes, score_thresh, nms_thresh, t
         result_per_image = [
             fast_rcnn_inference_single_image_recon_recls(
                 boxes_per_image, scores_per_image, image_shape, score_thresh, nms_thresh,
-                topk_per_image, features, mask_pooler, mask_head, recon_net, recon_alpha, recls
+                topk_per_image, features, mask_pooler, mask_head, recon_net, recon_alpha, recls, depth_list
             )
             for scores_per_image, boxes_per_image, image_shape
             in zip(scores, boxes, image_shapes)
@@ -175,7 +175,7 @@ def fast_rcnn_inference_single_image(
 
 def fast_rcnn_inference_single_image_recon_recls(
     boxes, scores, image_shape, score_thresh, nms_thresh, topk_per_image, features, mask_pooler, mask_head,
-        recon_net=None, alpha=2, recls=None
+        recon_net=None, alpha=2, recls=None, depth_list=None
 ):
     """
     Single-image inference. Return bounding-box detection results by thresholding
@@ -207,12 +207,19 @@ def fast_rcnn_inference_single_image_recon_recls(
     scores = scores[filter_mask]
 
     # apply recon net
-    mask_features = mask_pooler(features, [Boxes(boxes)])
+    if depth_list is None:
+        mask_features = mask_pooler(features, [Boxes(boxes)])
+    else:
+        mask_features, mask_depths = mask_pooler(features, [Boxes(boxes)], depth_list)
+
     if mask_head.cfg.MODEL.ROI_HEADS.NAME == "StandardROIHeads":
         pred_mask_logits = mask_head(mask_features)
     else:
         results = Instances(image_shape)
         results.pred_classes = filter_inds[:, 1]
+
+        if depth_list is not None:
+            results.set('depth', mask_depths)
 
         pred_mask_logits, _, = mask_head(mask_features, [results])
 
@@ -454,7 +461,7 @@ class FastRCNNOutputs(object):
 
     def inference(self, score_thresh, nms_thresh, topk_per_image, mask_pooler=None, mask_head=None,
                   features=None, proposals=None, targets=None, recon_net=None, recon_alpha=None, feature_dict=None,
-                  recls=None):
+                  recls=None, depth_list=None):
         """
         Args:
             score_thresh (float): same as fast_rcnn_inference.
@@ -473,7 +480,7 @@ class FastRCNNOutputs(object):
         image_shapes = self.image_shapes
         return fast_rcnn_inference(
             boxes, scores, image_shapes, score_thresh, nms_thresh, topk_per_image, mask_pooler=mask_pooler,
-            mask_head=mask_head, features=features, recon_net=recon_net, recon_alpha=recon_alpha, recls=recls,
+            mask_head=mask_head, features=features, recon_net=recon_net, recon_alpha=recon_alpha, recls=recls, depth_list=depth_list
         )
 
 
