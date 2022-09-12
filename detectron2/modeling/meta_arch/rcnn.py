@@ -46,6 +46,7 @@ class GeneralizedRCNN(nn.Module):
         self.vis_period = cfg.VIS_PERIOD
         self.predict_depth = cfg.MODEL.DEPTH.PREDICT
         self.output_dir = cfg.OUTPUT_DIR
+        self.no_rgb = cfg.MODEL.NO_RGB
         if self.predict_depth:
             self.extract_depth = cfg.MODEL.DEPTH.EXTRACT_FEATURES
             self.depth_predictor = DepthPredictionModule()
@@ -201,6 +202,7 @@ class GeneralizedRCNN(nn.Module):
         depth = np.log10(depth)
         depth_tensor = torch.tensor([[depth]]).cuda()
         depth_tensor = (depth_tensor - torch.mean(depth_tensor)) / torch.std(depth_tensor)
+
         if self.extract_depth:
             images = torch.cat((images, depth_tensor), 1)
 
@@ -221,6 +223,9 @@ class GeneralizedRCNN(nn.Module):
             axarrr[1].imshow(depth)
             plt.show()
             #quit()
+
+        if self.no_rgb:
+            images = images[:, :3, :, :]
 
         return images, output
 
