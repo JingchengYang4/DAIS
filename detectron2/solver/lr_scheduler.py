@@ -23,6 +23,7 @@ class WarmupMultiStepLR(torch.optim.lr_scheduler._LRScheduler):
         warmup_iters: int = 1000,
         warmup_method: str = "linear",
         last_epoch: int = -1,
+        warmup_pow=1.5
     ):
         if not list(milestones) == sorted(milestones):
             raise ValueError(
@@ -33,6 +34,7 @@ class WarmupMultiStepLR(torch.optim.lr_scheduler._LRScheduler):
         self.warmup_factor = warmup_factor
         self.warmup_iters = warmup_iters
         self.warmup_method = warmup_method
+        self.warmup_pow = warmup_pow
         super().__init__(optimizer, last_epoch)
 
     def get_lr(self) -> List[float]:
@@ -58,11 +60,13 @@ class WarmupCosineLR(torch.optim.lr_scheduler._LRScheduler):
         warmup_iters: int = 1000,
         warmup_method: str = "linear",
         last_epoch: int = -1,
+        warmup_pow=1.5
     ):
         self.max_iters = max_iters
         self.warmup_factor = warmup_factor
         self.warmup_iters = warmup_iters
         self.warmup_method = warmup_method
+        self.warmup_pow = warmup_pow
         super().__init__(optimizer, last_epoch)
 
     def get_lr(self) -> List[float]:
@@ -116,6 +120,6 @@ def _get_warmup_factor_at_iter(
     elif method == "smooth":
         x = iter / warmup_iters
         #print("LR OF ", x)
-        return pow(x, 1.5) * warmup_factor
+        return pow(x, self.warmup_pow) * warmup_factor
     else:
         raise ValueError("Unknown warmup method: {}".format(method))
