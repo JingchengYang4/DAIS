@@ -267,18 +267,27 @@ def align_and_update_state_dicts(model_state_dict, ckpt_state_dict, c2_conversio
         shape_in_model = model_state_dict[key_model].shape
 
         if shape_in_model != value_ckpt.shape:
-            logger.warning(
+            logger.info(
                 "Shape of {} in checkpoint is {}, while shape of {} in model is {}.".format(
                     key_ckpt, value_ckpt.shape, key_model, shape_in_model
                 )
             )
-            logger.warning(
+            """logger.warning(
                 "{} will not be loaded. Please double check and see if this is desired.".format(
                     key_ckpt
                 )
-            )
-            continue
+            )"""
 
+            if shape_in_model[1] < value_ckpt.shape[1]:
+                logger.info("Resizing to smaller dimension")
+                value_ckpt = value_ckpt[:, :shape_in_model[1]-1, :, :]
+            else:
+                for i in range(0, shape_in_model[1]):
+                    #print(value_ckpt[:, i%3, :, :].unsqueeze(1).size())
+                    #print(value_ckpt.size())
+                    value_ckpt = torch.cat((value_ckpt, value_ckpt[:, i%3, :, :].unsqueeze(1)), dim=1)
+
+            
         model_state_dict[key_model] = value_ckpt.clone()
         if key_ckpt in matched_keys:  # already added to matched_keys
             logger.error(
