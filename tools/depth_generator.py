@@ -19,7 +19,7 @@ for file in lines:
     depth = F.interpolate(image, size=(352, 1216), mode='bilinear', align_corners=True)
     depth = depth_predictor.Predict(depth)
     depth = F.interpolate(depth, image[0][0].size(), mode='bilinear', align_corners=True)
-    #print(i, "/", len(lines))
+    print(i, "/", len(lines))
     i += 1
     depth = torch.log10(depth)/3
     #print(torch.min(depth), torch.max(depth))
