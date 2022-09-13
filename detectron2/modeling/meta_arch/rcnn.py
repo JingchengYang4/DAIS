@@ -231,6 +231,7 @@ class GeneralizedRCNN(nn.Module):
 
         if self.normalize_depth:
             norm_depths = depth_tensor
+
             for i in range(1, self.offsets): #0, 1, 2, 3
                 offset = i * (1/self.offsets) * self.norm_step
                 norm_depths = torch.cat((norm_depths, depth_tensor+offset), 1)
@@ -241,9 +242,12 @@ class GeneralizedRCNN(nn.Module):
             norm_depths -= depth_norm
 
             if self.visualize_depth_norm:
-                f, axarrr = plt.subplots(self.offsets, 1)
+                f, axarrr = plt.subplots(self.offsets+3, 1)
+                axarrr[0].imshow(depth_tensor[0][0].cpu())
+                axarrr[1].imshow((torch.floor(depth_tensor/(self.norm_step * 0.5)) * self.norm_step)[0][0].cpu())
+                axarrr[2].imshow(((depth_tensor - (torch.sin(2 * 3.1415926 * depth_tensor))/(2 * 3.1415926)) * self.norm_step)[0][0].cpu())
                 for i in range(0, self.offsets):
-                    axarrr[i].imshow(norm_depths[0][i].cpu())
+                    axarrr[i+3].imshow(norm_depths[0][i].cpu())
                 plt.show()
 
             output.append(norm_depths)
@@ -298,7 +302,7 @@ class GeneralizedRCNN(nn.Module):
         images = self.preprocess_image(batched_inputs)
 
         if self.predict_depth:
-            images.tensor, output = self.depth(images.tensor)
+            images.tensor, output = self.depth(images.tensor, batched_inputs[0]['file_name'].replace(".png", "_depth.png"))
 
         features = self.backbone(images.tensor)
         if detected_instances is None:

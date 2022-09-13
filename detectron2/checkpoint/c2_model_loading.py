@@ -287,7 +287,7 @@ def align_and_update_state_dicts(model_state_dict, ckpt_state_dict, c2_conversio
                     #print(value_ckpt.size())
                     value_ckpt = torch.cat((value_ckpt, value_ckpt[:, i%3, :, :].unsqueeze(1)), dim=1)
 
-            
+
         model_state_dict[key_model] = value_ckpt.clone()
         if key_ckpt in matched_keys:  # already added to matched_keys
             logger.error(
