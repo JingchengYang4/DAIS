@@ -8,6 +8,7 @@ MODEL:
     NORMAL_MAP: True
     EXTRACT_NORMAL: True
     VISUALIZE_NORMAL: False
+    POOLING: True
     EDGE_OCCLUSION: True
     EO_MODE: 2
   RESNETS:

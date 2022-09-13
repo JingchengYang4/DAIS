@@ -6,6 +6,7 @@ MODEL:
     PREDICT: True
     EXTRACT_FEATURES: True
     NORMALIZE_DEPTH: True
+    POOLING: True
     EDGE_OCCLUSION: True
     EO_MODE: 2
   RESNETS:
