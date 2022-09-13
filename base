@@ -21,3 +21,5 @@ python tools/train_net.py --config-file configs/KINS-DAIS/DAIS_Rgb_DepthN_RAN.ya
 python tools/train_net.py --config-file configs/KINS-DAIS/DAIS_Rgb_RAN.yaml
 
 python tools/train_net.py --config-file configs/KINS-DAIS/DAIS_Depth_RAN.yaml
+
+python tools/train_net.py --config-file configs/KINS-DAIS/DAIS_Rgb_Normal_Depth_RAN.yaml
