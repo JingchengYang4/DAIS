@@ -1,10 +1,12 @@
-
+python tools/train_net.py --config-file configs/KINS-DAIS/DAIS_Rgb_IG.yaml
 
 python tools/train_net.py --config-file configs/KINS-DAIS/DAIS_Rgb_IG.yaml --eval-only MODEL.WEIGHTS 'output/ImageNet/mask_rcnn_parallel_CtRef_SPRef_SPRet_FM_KINS_res50_SGD_1x/model_final.pth'
 python tools/train_net.py --config-file configs/KINS-DAIS/DAIS_Rgb_EO.yaml --eval-only MODEL.WEIGHTS 'output/ImageNet/mask_rcnn_parallel_CtRef_SPRef_SPRet_FM_KINS_res50_SGD_1x/model_final.pth'
 python tools/train_net.py --config-file configs/KINS-DAIS/DAIS_Rgb_Depth_IG.yaml --eval-only MODEL.WEIGHTS 'output/ImageNet/mask_rcnn_parallel_CtRef_SPRef_SPRet_FM_KINS_res50_SGD_1x/model_final.pth'
 
-python tools/train_net.py --config-file configs/KINS-DAIS/DAIS_Rgb_EO.yaml
+python tools/train_net.py --config-file configs/KINS-DAIS/DAIS_Rgb_EO_RAN.yaml
+
+python tools/train_net.py --config-file configs/KINS-DAIS/DAIS_Rgb_Normal_IG.yaml
 
 python tools/train_net.py --config-file configs/KINS-DAIS/DAIS_Rgb_Normal_IG.yaml --eval-only MODEL.WEIGHTS 'output/RGB_NORMAL_IG/mask_rcnn_parallel_CtRef_SPRef_SPRet_FM_KINS_res50_SGD_1x/model_final.pth'
 
@@ -25,3 +27,7 @@ python tools/train_net.py --config-file configs/KINS-DAIS/DAIS_Depth_RAN.yaml
 python tools/train_net.py --config-file configs/KINS-DAIS/DAIS_Rgb_Normal_Depth_RAN.yaml
 
 python tools/train_net.py --config-file configs/KINS-DAIS/DAIS_Rgb_Normal_Depth_IG.yaml
+
+python tools/train_net.py --config-file configs/KINS-DAIS/DAIS_Rgb_Normal_Depth_EO_IG.yaml
+
+python tools/train_net.py --config-file configs/KINS-DAIS/DAIS_Rgb_Normal_Depth_EO_RAN.yaml

@@ -435,11 +435,14 @@ def apply_transform_gens(transform_gens, img):
     check_dtype(img)
 
     tfms = []
-    """for g in transform_gens:
-        tfm = g.get_transform(img)
-        assert isinstance(
-            tfm, Transform
-        ), "TransformGen {} must return an instance of Transform! Got {} instead".format(g, tfm)
-        img = tfm.apply_image(img)
-        tfms.append(tfm)"""
+
+    do_transform = False
+    if do_transform:
+        for g in transform_gens:
+            tfm = g.get_transform(img)
+            assert isinstance(
+                tfm, Transform
+            ), "TransformGen {} must return an instance of Transform! Got {} instead".format(g, tfm)
+            img = tfm.apply_image(img)
+            tfms.append(tfm)
     return img, TransformList(tfms)
