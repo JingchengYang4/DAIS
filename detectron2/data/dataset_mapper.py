@@ -82,17 +82,22 @@ class DatasetMapper:
         else:
             # Crop around an instance if there are instances in the image.
             # USER: Remove if you don't use cropping
-            if self.crop_gen:
+            if self.crop_gen and False:
                 crop_tfm = utils.gen_crop_transform_with_instance(
                     self.crop_gen.get_crop_size(image.shape[:2]),
                     image.shape[:2],
                     np.random.choice(dataset_dict["annotations"]),
                 )
                 image = crop_tfm.apply_image(image)
+            #print(type(image))
             image, transforms = T.apply_transform_gens(self.tfm_gens, image)
+            #print(transforms.transforms)
+            #quit()
             #print(transforms)
             if self.crop_gen:
                 transforms = crop_tfm + transforms
+
+        dataset_dict["transforms"] = transforms.transforms
 
         image_shape = image.shape[:2]  # h, w
         # Pytorch's dataloader is efficient on torch.Tensor due to shared-memory,

@@ -2,6 +2,7 @@
 import logging
 from os.path import exists
 
+import fvcore.transforms
 import matplotlib.pyplot as plt
 import numpy as np
 import torch
@@ -171,8 +172,10 @@ class GeneralizedRCNN(nn.Module):
         else:
             gt_instances = None
 
+
         if self.predict_depth:
-            images.tensor, depths = self.depth(images.tensor, batched_inputs[0]['file_name'].replace(".png", "_depth.png"))
+            images.tensor, depths = self.depth(images.tensor, batched_inputs[0]['file_name'].replace(".png", "_depth.png"), batched_inputs[0]['transforms'])
+            #for transform in batched_inputs[0]['transforms']:
 
         #print("STUFF I GUESS")
 
@@ -204,7 +207,7 @@ class GeneralizedRCNN(nn.Module):
         losses.update(proposal_losses)
         return losses
 
-    def depth(self, images, filename=None):
+    def depth(self, images, filename=None, transforms=None):
         if filename is not None and os.path.exists(filename):
             #print("USING CACHED DEPTH")
             depth = img.open(filename)
@@ -223,6 +226,12 @@ class GeneralizedRCNN(nn.Module):
             depth_tensor = torch.log10(depth_tensor)
 
         depth_tensor = (depth_tensor - torch.mean(depth_tensor)) / torch.std(depth_tensor)
+
+        if transforms is not None:
+            for transform in transforms:
+                if type(transform) is fvcore.transforms.transform.HFlipTransform:
+                    #print("HELP")
+                    depth_tensor = torch.flip(depth_tensor, dims=[3])
 
         #print(depth_tensor.size())
 
@@ -269,10 +278,18 @@ class GeneralizedRCNN(nn.Module):
                 images = torch.cat((images, normal), 1)
 
         if self.visualize_depth:
-            f, axarrr = plt.subplots(2, 1)
+            f, axarrr = plt.subplots(3, 1)
             axarrr[0].imshow(image.cpu()[0].permute(1, 2, 0))
+            print(torch.min(image), torch.max(image))
             #print(depth, type(depth))
             axarrr[1].imshow(depth_tensor.cpu()[0][0])
+
+            depth_overlay = depth_tensor-torch.min(depth_tensor)
+            depth_overlay /= torch.max(depth_overlay)
+
+            depth_overlay = image * depth_overlay
+
+            axarrr[2].imshow(depth_overlay.cpu()[0][0])
             plt.show()
             #quit()
 
@@ -302,7 +319,7 @@ class GeneralizedRCNN(nn.Module):
         images = self.preprocess_image(batched_inputs)
 
         if self.predict_depth:
-            images.tensor, output = self.depth(images.tensor, batched_inputs[0]['file_name'].replace(".png", "_depth.png"))
+            images.tensor, output = self.depth(images.tensor, batched_inputs[0]['file_name'].replace(".png", "_depth.png"), batched_inputs[0]['transforms'])
 
         features = self.backbone(images.tensor)
         if detected_instances is None:
