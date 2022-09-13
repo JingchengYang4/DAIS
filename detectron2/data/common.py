@@ -71,7 +71,7 @@ class DatasetFromList(data.Dataset):
         self._lst = lst
         self._copy = copy
         if False:
-            with open('depth_train.txt', 'w') as f:
+            with open('depth_val.txt', 'w') as f:
                 for k in lst:
                     print(k['file_name'])
                     f.write(f"{k['file_name']}\n")

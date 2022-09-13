@@ -206,7 +206,7 @@ class GeneralizedRCNN(nn.Module):
 
     def depth(self, images, filename=None):
         if filename is not None and os.path.exists(filename):
-            #print("USING CACHED DEPTH")
+            print("USING CACHED DEPTH")
             depth = img.open(filename)
             depth_tensor = self.convert(depth)
             depth_tensor = depth_tensor[0].unsqueeze(0).unsqueeze(0).cuda() * 3

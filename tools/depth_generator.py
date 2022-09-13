@@ -8,7 +8,7 @@ import torch.nn.functional as F
 
 depth_predictor = DepthPredictionModule(width=352, height=1216)
 
-file = open("depth_train.txt", "r")
+file = open("depth_val.txt", "r")
 lines = file.read().splitlines()
 
 convert = transforms.Compose([transforms.ToTensor()])
