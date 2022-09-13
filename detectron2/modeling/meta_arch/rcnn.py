@@ -146,6 +146,7 @@ class GeneralizedRCNN(nn.Module):
         """
         if not self.training:
             return self.inference(batched_inputs, do_postprocess=do_postprocess)
+
         images = self.preprocess_image(batched_inputs)
 
         if False:

@@ -70,10 +70,12 @@ class DatasetFromList(data.Dataset):
         """
         self._lst = lst
         self._copy = copy
-        #for k in lst:
-        #    print(k['file_name'])
-        #get the list here
-        #quit()
+        if False:
+            with open('depth_train.txt', 'w') as f:
+                for k in lst:
+                    print(k['file_name'])
+                    f.write(f"{k['file_name']}\n")
+            quit()
 
     def __len__(self):
         return len(self._lst)

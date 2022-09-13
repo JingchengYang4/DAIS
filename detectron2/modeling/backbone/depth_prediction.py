@@ -7,15 +7,15 @@ import torch
 
 
 class DepthPredictionModule:
-    def __init__(self):
+    def __init__(self, height=800, width=2656):
         parser = argparse.ArgumentParser(description='BTS PyTorch implementation.', fromfile_prefix_chars='@')
         args = parser.parse_args([])
         args.encoder = 'densenet161_bts'
         args.dataset = 'kitti'
         args.model_name = 'bts_eigen_v2_pytorch_densenet161'
         args.checkpoint_path = 'depth/pytorch/models/bts_eigen_v2_pytorch_densenet161/model'
-        args.input_height = 800
-        args.input_width = 2656
+        args.input_height = height
+        args.input_width = width
         #args.input_height = 400
         #args.input_width = 1328
         args.max_depth = 80
@@ -40,5 +40,5 @@ class DepthPredictionModule:
             #focal is 721
             # Predict
             lpg8x8, lpg4x4, lpg2x2, reduc1x1, depth_est = self.model(image, focal)
-            return depth_est.cpu().numpy().squeeze()
+            return depth_est
         #return depth_est
