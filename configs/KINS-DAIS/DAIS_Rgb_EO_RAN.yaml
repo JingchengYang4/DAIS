@@ -1,7 +1,7 @@
 _BASE_: "../Base-RCNN-FPN-KINS.yaml"
 VIS_PERIOD: 300
 MODEL:
-  WEIGHT: ""
+  WEIGHTS: ""
   MASK_ON: True
   DEPTH:
     PREDICT: True
