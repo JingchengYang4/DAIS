@@ -74,6 +74,7 @@ class DatasetMapper:
         # USER: Write your own image loading if it's not from a file
         image = utils.read_image(dataset_dict["file_name"], format=self.img_format)
         utils.check_image_size(dataset_dict, image)
+        #disabled transofmraiton
         if "annotations" not in dataset_dict:
             image, transforms = T.apply_transform_gens(
                 ([self.crop_gen] if self.crop_gen else []) + self.tfm_gens, image
@@ -89,6 +90,7 @@ class DatasetMapper:
                 )
                 image = crop_tfm.apply_image(image)
             image, transforms = T.apply_transform_gens(self.tfm_gens, image)
+            #print(transforms)
             if self.crop_gen:
                 transforms = crop_tfm + transforms
 

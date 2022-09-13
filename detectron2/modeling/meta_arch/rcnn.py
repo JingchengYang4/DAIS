@@ -1,10 +1,13 @@
 # Copyright (c) Facebook, Inc. and its affiliates. All Rights Reserved
 import logging
+from os.path import exists
 
 import matplotlib.pyplot as plt
 import numpy as np
 import torch
+import PIL.Image as img
 from torch import nn
+from torchvision.transforms import transforms
 
 from detectron2.structures import ImageList
 from detectron2.utils.events import get_event_storage
@@ -48,6 +51,7 @@ class GeneralizedRCNN(nn.Module):
         self.output_dir = cfg.OUTPUT_DIR
         self.no_rgb = cfg.MODEL.NO_RGB
         if self.predict_depth:
+            self.convert = transforms.Compose([transforms.ToTensor()])
             self.extract_depth = cfg.MODEL.DEPTH.EXTRACT_FEATURES
             self.depth_predictor = DepthPredictionModule()
             self.depth_std = cfg.MODEL.DEPTH.PIXEL_STD
@@ -168,7 +172,7 @@ class GeneralizedRCNN(nn.Module):
             gt_instances = None
 
         if self.predict_depth:
-            images.tensor, depths = self.depth(images.tensor)
+            images.tensor, depths = self.depth(images.tensor, batched_inputs[0]['file_name'].replace(".png", "_depth.png"))
 
         #print("STUFF I GUESS")
 
@@ -200,14 +204,27 @@ class GeneralizedRCNN(nn.Module):
         losses.update(proposal_losses)
         return losses
 
-    def depth(self, images):
-        image = torch.flip(images, [1])#switches bgr to rgb
-        image -= torch.min(image)#recenter RGB to 0-255
-        image /= 255
-        depth = self.depth_predictor.Predict(image)
-        depth = np.log10(depth)
-        depth_tensor = torch.tensor([[depth]]).cuda()
+    def depth(self, images, filename=None):
+        if filename is not None and os.path.exists(filename):
+            #print("USING CACHED DEPTH")
+            depth = img.open(filename)
+            depth_tensor = self.convert(depth)
+            depth_tensor = depth_tensor[0].unsqueeze(0).unsqueeze(0).cuda() * 3
+            depth_tensor = F.interpolate(depth_tensor, images[0][0].size(), mode='bilinear', align_corners=True)
+            if self.visualize_depth:
+                image = torch.flip(images, [1])#switches bgr to rgb
+                image -= torch.min(image)#recenter RGB to 0-255
+                image /= 255
+        else:
+            image = torch.flip(images, [1])#switches bgr to rgb
+            image -= torch.min(image)#recenter RGB to 0-255
+            image /= 255
+            depth_tensor = self.depth_predictor.Predict(image)
+            depth_tensor = torch.log10(depth_tensor)
+
         depth_tensor = (depth_tensor - torch.mean(depth_tensor)) / torch.std(depth_tensor)
+
+        #print(depth_tensor.size())
 
         #print(torch.min(depth_tensor), torch.max(depth_tensor))
         output = [depth_tensor]
