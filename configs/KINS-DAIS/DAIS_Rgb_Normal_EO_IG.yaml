@@ -1,10 +1,12 @@
 _BASE_: "../Base-RCNN-FPN-KINS.yaml"
-VIS_PERIOD: 300
+#VIS_PERIOD: 500
 MODEL:
   MASK_ON: True
   DEPTH:
     PREDICT: True
-    POOLING: True
+    NORMAL_MAP: True
+    EXTRACT_NORMAL: True
+    VISUALIZE_NORMAL: False
     VISUALIZE: False
     EDGE_OCCLUSION: True
     EO_MODE: 2
@@ -12,8 +14,6 @@ MODEL:
     DEPTH: 50
   ROI_HEADS:
     NAME: "Parallel_Amodal_Visible_ROIHeads"
-  BACKBONE:
-    FREEZE_AT: 0
   ROI_MASK_HEAD:
     NAME: "Parallel_Amodal_Visible_Head"
     VERSION: 3
@@ -38,9 +38,8 @@ MODEL:
       LOAD_CODEBOOK: True
       MEMORY_REFINE: True
       MEMORY_REFINE_K: 16
-
 TEST:
   EVAL_AMODAL_TYPE: "AMODAL_VISIBLE"
 OUTPUT:
   TRAIN_VERSION: 'DAIS'
-OUTPUT_DIR: 'output/RGB_EO_IG'
+OUTPUT_DIR: 'output/RGB_NORMAL_EO_IG'
