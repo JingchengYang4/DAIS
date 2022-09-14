@@ -225,6 +225,9 @@ class General_Recon_Net(nn.Module):
         super(General_Recon_Net, self).__init__()
         self.encoder = []
         self.decoder = []
+        self.depth = cfg.MODEL.ROI_MASK_HEAD.RECON_NET.DEPTH
+        if self.depth:
+            input_channels += 1
 
         for k in range(self.num_conv):
             conv = Conv2d(
@@ -254,12 +257,12 @@ class General_Recon_Net(nn.Module):
                                    nn.ReLU())
             self.add_module("mask_fcn_dec{}".format(k + 1), deconv)
             self.decoder.append(deconv)
-        self.outconv = nn.Sequential(nn.Conv2d(self.conv_dims,
-                                               1,
-                                               kernel_size=3,
-                                               stride=1,
-                                               padding=1),
-                                     nn.Sigmoid())
+            self.outconv = nn.Sequential(nn.Conv2d(self.conv_dims,
+                                                   1,
+                                                   kernel_size=3,
+                                                   stride=1,
+                                                   padding=1),
+                                         nn.Sigmoid())
         # self.d = {1: 14, 2: 7, 3: 4, 4: 2}
         # self.fc = nn.Linear(self.conv_dims, self.conv_dims * self.d[self.num_conv] * self.d[self.num_conv], bias=False)
 

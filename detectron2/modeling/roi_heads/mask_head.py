@@ -655,6 +655,10 @@ class Parallel_Amodal_Visible_Head(nn.Module):
         self.version      = cfg.MODEL.ROI_MASK_HEAD.VERSION
         self._output_size = (input_shape.channels, input_shape.height, input_shape.width)
         self.attention_mode = cfg.MODEL.ROI_MASK_HEAD.ATTENTION_MODE
+        self.cdepth = cfg.MODEL.ROI_MASK_HEAD.RECON_NET.DEPTH
+
+        if self.cdepth:
+            self.depth_upscale = nn.Upsample(scale_factor=2, mode="bilinear", align_corners=True)
 
         self.edge_occlusion = cfg.MODEL.DEPTH.EDGE_OCCLUSION
         if self.edge_occlusion:
@@ -762,6 +766,7 @@ class Parallel_Amodal_Visible_Head(nn.Module):
 
             if self.SPRef:
                 pred_amodal_masks = classes_choose(masks_logits[0], instances).unsqueeze(1)
+                print(pred_amodal_masks.size())
                 nn_latent_vectors = self.recon_net.encode(pred_amodal_masks).view(pred_amodal_masks.size(0), -1)
 
                 if instances[0].has("gt_classes"):
@@ -822,33 +827,43 @@ class Parallel_Amodal_Visible_Head(nn.Module):
                 if self.attention_mode == "mask" else self.visible_pool(classes_choose(visible_masks_logits_, instances)).unsqueeze(1).sigmoid()
 
             if not instances[0].has("gt_masks") and self.edge_occlusion:
+
                 va = visible_attention * 1.0
-                valid_depths = instances[0].depth * va
-
-                d_sum = torch.sum(valid_depths, dim=(2, 3))
-                v_sum = torch.sum(va, dim=(2, 3))
-
-                mean = torch.div(d_sum, v_sum)
-                normalized_depths = instances[0].depth
-
-                mean = mean.unsqueeze(1).unsqueeze(1)
-
-                normalized_depths = normalized_depths - mean
+                normalized_depths = self.normalize_depth(va, instances[0].depth)
 
                 occlusion = self.eo_head.forward(normalized_depths, va) # this isessentialyl the amodal attention from occlusoin
 
                 amodal_attention = self.or_head.forward(amodal_attention, occlusion)
 
+                #if self.edge_occlusion:
+                    #so basically we get the amodal attention from eo head, then we combine this with the other one through or refinement phase
 
-            #if self.edge_occlusion:
-                #so basically we get the amodal attention from eo head, then we combine this with the other one through or refinement phase
-
-                #self.eo_head.forward(nd_tensor, visible_attention*1.0)#, instances[0].features)
+                    #self.eo_head.forward(nd_tensor, visible_attention*1.0)#, instances[0].features)
 
             if self.SPRef:
                 pred_amodal_masks = classes_choose(masks_logits[0], instances).unsqueeze(1)
 
+                if self.cdepth:
+                    if not ('normalized_depths' in locals()):
+                        va = visible_attention * 1.0
+                        normalized_depths = self.normalize_depth(va, instances[0].depth)
+                    upscaled_depth = self.depth_upscale(normalized_depths)
+                    pred_amodal_masks = torch.cat((pred_amodal_masks, upscaled_depth), dim=1)
+
                 nn_latent_vectors = self.recon_net.encode(pred_amodal_masks).view(pred_amodal_masks.size(0), -1)
+
+                #print(self.recon_net.encode)
+
+                #print(nn_latent_vectors.size())
+
+                #quit()
+
+                #print(pred_amodal_masks.size())
+                #plt.imshow(pred_amodal_masks[0][0].cpu().detach().numpy())
+                #plt.show()
+
+                #so essentially, the encode and decoe layers are trained into weights so they can return the same shape given an input, ok.
+
                 if instances[0].has("gt_classes"):
                     shape_prior = self.recon_net.nearest_decode(nn_latent_vectors,
                                                                 cat([i.gt_classes for i in instances], dim=0),
@@ -857,6 +872,7 @@ class Parallel_Amodal_Visible_Head(nn.Module):
                     shape_prior = self.recon_net.nearest_decode(nn_latent_vectors,
                                                                 cat([i.pred_classes for i in instances], dim=0),
                                                                 k=self.SPk).detach()
+                
                 shape_prior = F.avg_pool2d(shape_prior, 2)
                 amodal_masks_logits_, amodal_feature_maps_ = self.single_head_forward(
                     self.fuse_layer(cat([x * visible_attention, shape_prior], dim=1)), "amodal")
@@ -882,17 +898,7 @@ class Parallel_Amodal_Visible_Head(nn.Module):
 
                 if self.edge_occlusion:
                     va = visible_attention_gt * 1.0
-                    valid_depths = instances[0].depth * va
-
-                    d_sum = torch.sum(valid_depths, dim=(2, 3))
-                    v_sum = torch.sum(va, dim=(2, 3))
-
-                    mean = torch.div(d_sum, v_sum)
-                    normalized_depths = instances[0].depth
-
-                    mean = mean.unsqueeze(1).unsqueeze(1)
-
-                    normalized_depths = normalized_depths - mean
+                    normalized_depths = self.normalize_depth(va, instances[0].depth)
 
                     eo_loss, occlusion = self.eo_head.forward(normalized_depths, va, amodal_attention_gt*1.0)
 
@@ -918,6 +924,19 @@ class Parallel_Amodal_Visible_Head(nn.Module):
             return output_mask_logits, output_feature, [eo_loss, occlusion, or_loss]
         else:
             return output_mask_logits, output_feature
+
+    def normalize_depth(self, va, depth):
+        valid_depths = depth * va
+
+        d_sum = torch.sum(valid_depths, dim=(2, 3))
+        v_sum = torch.sum(va, dim=(2, 3))
+
+        mean = torch.div(d_sum, v_sum)
+        normalized_depths = depth
+
+        mean = mean.unsqueeze(1).unsqueeze(1)
+
+        return normalized_depths - mean
 
     def forward_through(self, x1, x2):
         features = []

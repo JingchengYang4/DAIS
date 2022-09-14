@@ -757,6 +757,7 @@ class Parallel_Amodal_Visible_ROIHeads(ROIHeads):
         self._init_mask_head(cfg)
         self.iter = 0
         self.depth_pooling = cfg.MODEL.DEPTH.POOLING
+        self.edge_occlusion = cfg.MODEL.DEPTH.EDGE_OCCLUSION
 
     def _init_box_head(self, cfg):
         # fmt: off
@@ -1002,7 +1003,7 @@ class Parallel_Amodal_Visible_ROIHeads(ROIHeads):
             if self._cfg.MODEL.ROI_MASK_HEAD.AMODAL_FEATURE_MATCHING[0] is not None:
                 #GET THE MASKS HERE?
                 #Yeah so great beause depth is already being send
-                if depth_list is not None:
+                if self.edge_occlusion:
                     mask_logits, features, occlusion = self.mask_head(mask_features, proposals)
                     losses.update({"loss_eo": occlusion[0]})
                     losses.update({"loss_or": occlusion[2]})
