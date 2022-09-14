@@ -72,3 +72,11 @@ To test BTS depth prediction
 ```
 python bts_test.py arguments_test_eigen.txt
 ```
+
+## Visualization
+DAISnet provides different ways for data visualization. For training visualization of proposal boxes, you can use DAIS_Rgb_IG_VIS.yaml for visualization.
+
+For inference, run
+```
+python tools/visualize_json_results.py --input inference/coco_instances_amodal2_results.json --output output --dataset kins_val
+```
