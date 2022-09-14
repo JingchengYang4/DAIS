@@ -847,6 +847,7 @@ class Parallel_Amodal_Visible_Head(nn.Module):
                     if not ('normalized_depths' in locals()):
                         va = visible_attention * 1.0
                         normalized_depths = self.normalize_depth(va, instances[0].depth)
+                        normalized_depths *= va
                     upscaled_depth = self.depth_upscale(normalized_depths)
                     pred_amodal_masks = torch.cat((pred_amodal_masks, upscaled_depth), dim=1)
 
@@ -872,7 +873,7 @@ class Parallel_Amodal_Visible_Head(nn.Module):
                     shape_prior = self.recon_net.nearest_decode(nn_latent_vectors,
                                                                 cat([i.pred_classes for i in instances], dim=0),
                                                                 k=self.SPk).detach()
-                
+
                 shape_prior = F.avg_pool2d(shape_prior, 2)
                 amodal_masks_logits_, amodal_feature_maps_ = self.single_head_forward(
                     self.fuse_layer(cat([x * visible_attention, shape_prior], dim=1)), "amodal")
