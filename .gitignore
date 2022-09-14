@@ -140,3 +140,4 @@ detectron2/model_zoo/configs
 models/
 
 visualization/
+tools/loss_gen.py
