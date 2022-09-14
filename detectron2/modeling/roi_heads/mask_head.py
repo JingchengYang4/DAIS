@@ -853,16 +853,8 @@ class Parallel_Amodal_Visible_Head(nn.Module):
                     pred_amodal_masks = torch.cat((pred_amodal_masks, upscaled_depth), dim=1)
 
                 nn_latent_vectors = self.recon_net.encode(pred_amodal_masks).view(pred_amodal_masks.size(0), -1)
-
-                #print(self.recon_net.encode)
-
-                #print(nn_latent_vectors.size())
-
-                #quit()
-
-                #print(pred_amodal_masks.size())
-                #plt.imshow(pred_amodal_masks[0][0].cpu().detach().numpy())
-                #plt.show()
+                plt.imshow(nn_latent_vectors.cpu().detach().numpy())
+                plt.show()
 
                 #so essentially, the encode and decoe layers are trained into weights so they can return the same shape given an input, ok.
 
