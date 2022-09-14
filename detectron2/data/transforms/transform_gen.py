@@ -436,7 +436,7 @@ def apply_transform_gens(transform_gens, img):
 
     tfms = []
 
-    do_transform = False
+    do_transform = True
     if do_transform:
         for g in transform_gens:
             tfm = g.get_transform(img)
