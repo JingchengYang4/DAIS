@@ -656,6 +656,7 @@ class Parallel_Amodal_Visible_Head(nn.Module):
         self._output_size = (input_shape.channels, input_shape.height, input_shape.width)
         self.attention_mode = cfg.MODEL.ROI_MASK_HEAD.ATTENTION_MODE
         self.cdepth = cfg.MODEL.ROI_MASK_HEAD.RECON_NET.DEPTH
+        self.visible_depth_only = cfg.MODEL.ROI_MASK_HEAD.RECON_NET.VISIBLE_ONLY
 
         if self.cdepth:
             self.depth_upscale = nn.Upsample(scale_factor=2, mode="bilinear", align_corners=True)
@@ -766,7 +767,7 @@ class Parallel_Amodal_Visible_Head(nn.Module):
 
             if self.SPRef:
                 pred_amodal_masks = classes_choose(masks_logits[0], instances).unsqueeze(1)
-                print(pred_amodal_masks.size())
+                #print(pred_amodal_masks.size())
                 nn_latent_vectors = self.recon_net.encode(pred_amodal_masks).view(pred_amodal_masks.size(0), -1)
 
                 if instances[0].has("gt_classes"):
@@ -837,7 +838,6 @@ class Parallel_Amodal_Visible_Head(nn.Module):
 
                 #if self.edge_occlusion:
                     #so basically we get the amodal attention from eo head, then we combine this with the other one through or refinement phase
-
                     #self.eo_head.forward(nd_tensor, visible_attention*1.0)#, instances[0].features)
 
             if self.SPRef:
@@ -847,7 +847,8 @@ class Parallel_Amodal_Visible_Head(nn.Module):
                     if not ('normalized_depths' in locals()):
                         va = visible_attention * 1.0
                         normalized_depths = self.normalize_depth(va, instances[0].depth)
-                        normalized_depths *= va
+                        if self.visible_depth_only:
+                            normalized_depths *= va
                     upscaled_depth = self.depth_upscale(normalized_depths)
                     pred_amodal_masks = torch.cat((pred_amodal_masks, upscaled_depth), dim=1)
 
