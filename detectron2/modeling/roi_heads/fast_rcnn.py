@@ -249,9 +249,12 @@ def fast_rcnn_inference_single_image_recon_recls(
             select = 1 if len(pred_mask_logits) == 2 else 0
             indices = torch.arange(pred_mask_logits[select][0].size(0), device=pred_mask_logits[select][0].device)
             pred_masks = (pred_mask_logits[select][0][indices, filter_inds[:, 1]] > 0).unsqueeze(1).float()
+            print(pred_masks.size())
             if recon_net.depth:
                 va = pred_masks * 1.0
                 depth = (results.depth[select][0][indices, filter_inds[:, 1]] > 0).unsqueeze(1).float()
+                print(depth.size())
+                quit()
                 valid_depths = depth * va
 
                 d_sum = torch.sum(valid_depths, dim=(2, 3))
