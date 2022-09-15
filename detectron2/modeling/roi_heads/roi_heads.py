@@ -891,13 +891,16 @@ class Parallel_Amodal_Visible_ROIHeads(ROIHeads):
                 else:
                     pred_instances = self._forward_box_and_mask_inference(features, proposals)
             else:
-                pred_instances = self._forward_box(features_list, proposals)
+                if self.depth_pooling:
+                    pred_instances = self._forward_box_and_mask_inference(features, proposals, self.depth_list)
+                else:
+                    pred_instances = self._forward_box_and_mask_inference(features, proposals)
                 # During inference cascaded prediction is used: the mask and keypoints heads are only
                 # applied to the top scoring box detections.
-                pred_instances = self.forward_with_given_boxes(features, pred_instances)
+                pred_instances = self.forward_with_given_boxes(features, pred_instances, self.depth_list)
             return pred_instances, {}
 
-    def forward_with_given_boxes(self, features, instances):
+    def forward_with_given_boxes(self, features, instances, depth_list=None):
         """
         Use the given boxes in `instances` to produce other (non-box) per-ROI outputs.
 
@@ -923,7 +926,7 @@ class Parallel_Amodal_Visible_ROIHeads(ROIHeads):
         if self.inference_embedding:
             instances = self.add_ground_truth_for_inference_embedding(instances)
 
-        instances = self._forward_mask(features, instances)
+        instances = self._forward_mask(features, instances, depth_list)
         return instances
 
     def _forward_box(self, features, proposals):
