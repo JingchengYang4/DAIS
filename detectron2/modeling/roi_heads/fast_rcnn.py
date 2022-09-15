@@ -254,7 +254,8 @@ def fast_rcnn_inference_single_image_recon_recls(
                 va = pred_masks * 1.0
                 depth_upscale = nn.Upsample(scale_factor=2, mode="bilinear", align_corners=True)
                 depth = depth_upscale(results.depth)
-                valid_depths = depth * va
+                if recon_net.visible_only:
+                    valid_depths = depth * va
 
                 d_sum = torch.sum(valid_depths, dim=(2, 3))
                 v_sum = torch.sum(va, dim=(2, 3))

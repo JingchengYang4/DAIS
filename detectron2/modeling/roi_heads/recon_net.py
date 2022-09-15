@@ -241,6 +241,7 @@ class General_Recon_Net(nn.Module):
         super(General_Recon_Net, self).__init__()
         self.encoder = []
         self.decoder = []
+        self.visible_only = cfg.MODEL.ROI_MASK_HEAD.RECON_NET.VISIBLE_ONLY
         self.depth = cfg.MODEL.ROI_MASK_HEAD.RECON_NET.DEPTH
         if self.depth:
             input_channels += 1
