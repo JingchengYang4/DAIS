@@ -256,7 +256,7 @@ def fast_rcnn_inference_single_image_recon_recls(
                 depth = depth_upscale(results.depth)
                 if recon_net.visible_only:
                     valid_depths = depth * va
-                else
+                else:
                     valid_depths = depth
 
                 d_sum = torch.sum(valid_depths, dim=(2, 3))
