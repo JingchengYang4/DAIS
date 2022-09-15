@@ -116,6 +116,7 @@ def mask_recon_inference(pred_instances, targets, recon_net, iou_ths=0.9):
     pred_instance = pred_instances[0]
     target = targets[0]
     masks = []
+    depths = []
     classes = []
     mask_side_len = pred_instances[0].pred_amodal_masks.size(2)
 
@@ -129,23 +130,36 @@ def mask_recon_inference(pred_instances, targets, recon_net, iou_ths=0.9):
     filter_inds = (iou > iou_ths).nonzero()
     if pred_instance.has("pred_amodal_masks"):
         masks.append(pred_instance.pred_amodal2_masks[filter_inds[:, 0]])  # (1, Hmask, Wmask)
+        if recon_net.depth:
+            depths.append(pred_instance.depth[filter_inds[:, 0]])
     else:
         masks.append(pred_instance.pred_amodal_masks[filter_inds[:, 0]])
+        if recon_net.depth:
+            depths.append(pred_instance.depth[filter_inds[:, 0]])
     classes.append(pred_instance.gt_classes_inference[filter_inds[:, 0]])
 
     if filter_inds.size(0) != 0:
         masks.append(pred_instance.gt_masks_inference[filter_inds[:, 0]].crop_and_resize(
             pred_instance.pred_boxes.tensor[filter_inds[:, 0]], mask_side_len
         ).to(device=pred_masks_orig_size.device).unsqueeze(1).float())
+        if recon_net.depth:
+            depths.append(pred_instance.depth[filter_inds[:, 0]].crop_and_resize(
+                pred_instance.pred_boxes.tensor[filter_inds[:, 0]], mask_side_len
+            ).to(device=pred_masks_orig_size.device).unsqueeze(1).float())
         classes.append(pred_instance.gt_classes_inference[filter_inds[:, 0]])
 
-    masks.append(target.gt_masks.crop_and_resize(
-        target.gt_boxes.tensor, mask_side_len
-    ).to(device=pred_masks_orig_size.device).unsqueeze(1).float())
+    if not recon_net.depth:
+        masks.append(target.gt_masks.crop_and_resize(
+            target.gt_boxes.tensor, mask_side_len
+        ).to(device=pred_masks_orig_size.device).unsqueeze(1).float())
     classes.append(target.gt_classes)
+
+    if len(masks) <= 0:
+        return
 
     masks = cat(masks, dim=0)
     classes = cat(classes, dim=0)
+    depths = cat(depths, dim=0)
 
     # else:
     #     mask_side_len = pred_instances[0].pred_masks.size(2)
@@ -192,6 +206,8 @@ def mask_recon_inference(pred_instances, targets, recon_net, iou_ths=0.9):
         masks = masks_aug
         classes = classes_aug
 
+    print(masks.size())
+    print(pred_instances[0].depth.size())
     recon_masks_logits, latent_vectors = recon_net((masks > 0.5).float())
     # recon_masks = (recon_masks_logits > 0.5).float()
     for i in range(len(classes.unique())):

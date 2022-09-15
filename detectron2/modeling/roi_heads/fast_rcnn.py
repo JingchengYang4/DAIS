@@ -249,12 +249,11 @@ def fast_rcnn_inference_single_image_recon_recls(
             select = 1 if len(pred_mask_logits) == 2 else 0
             indices = torch.arange(pred_mask_logits[select][0].size(0), device=pred_mask_logits[select][0].device)
             pred_masks = (pred_mask_logits[select][0][indices, filter_inds[:, 1]] > 0).unsqueeze(1).float()
-            print(pred_masks.size())
+
             if recon_net.depth:
                 va = pred_masks * 1.0
-                depth = (results.depth[select][0][indices, filter_inds[:, 1]] > 0).unsqueeze(1).float()
-                print(depth.size())
-                quit()
+                depth_upscale = nn.Upsample(scale_factor=2, mode="bilinear", align_corners=True)
+                depth = depth_upscale(results.depth)
                 valid_depths = depth * va
 
                 d_sum = torch.sum(valid_depths, dim=(2, 3))
@@ -262,12 +261,12 @@ def fast_rcnn_inference_single_image_recon_recls(
 
                 mean = torch.div(d_sum, v_sum)
                 normalized_depths = depth
-
                 mean = mean.unsqueeze(1).unsqueeze(1)
                 normalized_depths -= mean
-                depth_upscale = nn.Upsample(scale_factor=2, mode="bilinear", align_corners=True)
-                upscaled_depth = depth_upscale(normalized_depths)
-                pred_masks = torch.cat((pred_masks, upscaled_depth), dim=1)
+                #print(normalized_depths.size())
+                pred_masks = torch.cat((pred_masks, normalized_depths), dim=1)
+
+            #print(pred_masks.size())
 
             similiarity, recon_logits = get_similarity(pred_masks, recon_net, filter_inds, post_process=mode)
 

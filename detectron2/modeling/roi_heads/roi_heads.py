@@ -1079,9 +1079,11 @@ class Parallel_Amodal_Visible_ROIHeads(ROIHeads):
 
             amodal_mask_rcnn_inference(mask_logits, instances)
 
-            if self._cfg.MODEL.ROI_MASK_HEAD.RECON_NET.NAME == "General_Recon_Net" and self.inference_embedding \
+            if False and self._cfg.MODEL.ROI_MASK_HEAD.RECON_NET.NAME == "General_Recon_Net" and self.inference_embedding \
                     and len(self.targets[0]) > 0:
-                mask_recon_inference(instances, self.targets, self.recon_net, iou_ths=self.recon_mask_ths)
+                #OK THIS MIGHT NEED TO BE FIXED I SUPPOSE
+                instances = self.add_ground_truth_for_inference_embedding(instances)
+                #mask_recon_inference(instances, self.targets, self.recon_net, iou_ths=self.recon_mask_ths)
 
             return instances
 
